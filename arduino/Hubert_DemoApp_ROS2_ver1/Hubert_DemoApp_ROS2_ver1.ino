@@ -1,3 +1,6 @@
+#include <micro_ros_arduino.h>
+#include <yaml.h>
+
 /*
   Hubert robot test program.
 
@@ -11,12 +14,12 @@
   Note: correct port must be selected (ttyACM0, 1 or whatever)
   Same baud rate as in Arduino sketch (below)
   >> ros2 topic echo publisher
-  >> ros2 topic pub /servo_body std_msgs/UInt16 <angle>
-  >> ros2 topic pub /servo_neck_pan std_msgs/UInt16 <angle>
-  >> ros2 topic pub /servo_neck_tilt std_msgs/UInt16 <angle>
-  >> ros2 topic pub /servo_shoulder std_msgs/UInt16 <angle>
-  >> ros2 topic pub /servo_elbow std_msgs/UInt16 <angle>
-  >> ros2 topic pub /servo_gripper std_msgs/UInt16 <angle>
+  >> ros2 topic pub /servo_body std_msgs/Int16 data:\ <angle>\  
+  >> ros2 topic pub /servo_neck_pan std_msgs/Int16 data:\ <angle>\
+  >> ros2 topic pub /servo_neck_tilt std_msgs/Int16 data:\ <angle>\
+  >> ros2 topic pub /servo_shoulder std_msgs/Int16 data:\ <angle>\
+  >> ros2 topic pub /servo_elbow std_msgs/Int16 data:\ <angle>\
+  >> ros2 topic pub /servo_gripper std_msgs/Int16 data:\ <angle>\
 
   Replace <angle> with a write.microseconds value in approx. [500,2350], mid pos.: 1350
   NOTE: Go back to NeutralPos. before terminating.
@@ -33,16 +36,17 @@
 
 #include <Arduino.h>
 #include <Servo.h>
-#include <ros2arduino.h>
+// #include <ros2arduino.h>
 #include <micro_ros_arduino.h>
 #include <rcl/rcl.h>
 #include <rcl/error_handling.h>
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
 #include <std_msgs/msg/int16.h>
+#include <std_msgs/msg/u_int16.h>
 
-std_msgs__msg__Int16 recv_msg;
-std_msgs__msg__Int16 Pwm;
+std_msgs__msg__UInt16 recv_msg;
+std_msgs__msg__UInt16 Pwm;
 
 rcl_node_t node;
 
@@ -89,14 +93,14 @@ rcl_subscription_t servo_gripper_ex;
 
 
 //ROS-setup
-void servo_body_ex_cb(const std_msgs::Int16& cmd_msg) {
+void servo_body_ex_cb(const void * msgin) {
 
   int diff, steps, now, CurrPwm, NewPwm, delta = 6;
-
+  const std_msgs__msg__UInt16 * cmd_msg = (const std_msgs__msg__UInt16 *)msgin;
   //current servo value
   now = curr_pos[0];
   CurrPwm = now;
-  NewPwm = cmd_msg.data;
+  NewPwm = cmd_msg->data;
 
   /* determine interation "diff" from old to new position */
   diff = (NewPwm - CurrPwm)/abs(NewPwm - CurrPwm); // Should return +1 if NewPwm is bigger than CurrPwm, -1 otherwise.
@@ -108,23 +112,23 @@ void servo_body_ex_cb(const std_msgs::Int16& cmd_msg) {
 	body.writeMicroseconds(now);
 	//Publishing data
 	Pwm.data = now;//ZZZ
-	// publisher.publish(&Pwm);//ZZZ
+  RCSOFTCHECK(rcl_publish(&publisher, &Pwm, NULL));
 	delay(20);
   }
   curr_pos[0] = now;
   delay(10);
 
-  // hubert.loginfo("GOT DATA MOVE BODY");
+  // node.loginfo("GOT DATA MOVE BODY");
 }
 
-void servo_neck_pan_cb(const std_msgs::Int16& cmd_msg) {
+void servo_neck_pan_cb(const void * msgin) {
 
   int diff, steps, now, CurrPwm, NewPwm, delta = 6;
-
+  const std_msgs__msg__UInt16 * cmd_msg = (const std_msgs__msg__UInt16 *)msgin;
   //current servo value
   now = curr_pos[1];
   CurrPwm = now;
-  NewPwm = cmd_msg.data;
+  NewPwm = cmd_msg->data;
 
   /* determine interation "diff" from old to new position */
   diff = (NewPwm - CurrPwm)/abs(NewPwm - CurrPwm); // Should return +1 if NewPwm is bigger than CurrPwm, -1 otherwise.
@@ -136,7 +140,7 @@ void servo_neck_pan_cb(const std_msgs::Int16& cmd_msg) {
 	headPan.writeMicroseconds(now);
 	//Publishing data
 	Pwm.data = now;//ZZZ
-	// publisher.publish(&Pwm);
+  RCSOFTCHECK(rcl_publish(&publisher, &Pwm, NULL));
 	delay(20);
   }
   curr_pos[1] = now;
@@ -145,14 +149,14 @@ void servo_neck_pan_cb(const std_msgs::Int16& cmd_msg) {
 	// hubert.loginfo("GOT DATA MOVE SERVO NECK PAN");
 }
 
-void servo_neck_tilt_cb(const std_msgs::Int16& cmd_msg) {
+void servo_neck_tilt_cb(const void * msgin) {
 
   int diff, steps, now, CurrPwm, NewPwm, delta = 6;
-
+  const std_msgs__msg__UInt16 * cmd_msg = (const std_msgs__msg__UInt16 *)msgin;
   //current servo value
   now = curr_pos[2];
   CurrPwm = now;
-  NewPwm = cmd_msg.data;
+  NewPwm = cmd_msg->data;
 
   /* determine interation "diff" from old to new position */
   diff = (NewPwm - CurrPwm)/abs(NewPwm - CurrPwm); // Should return +1 if NewPwm is bigger than CurrPwm, -1 otherwise.
@@ -164,7 +168,7 @@ void servo_neck_tilt_cb(const std_msgs::Int16& cmd_msg) {
 	headTilt.writeMicroseconds(now);
 	//Publishing data
 	Pwm.data = now;//ZZZ
-	// publisher.publish(&Pwm);
+	RCSOFTCHECK(rcl_publish(&publisher, &Pwm, NULL));
 	delay(20);
   }
   curr_pos[2] = now;
@@ -173,14 +177,14 @@ void servo_neck_tilt_cb(const std_msgs::Int16& cmd_msg) {
 	// hubert.loginfo("GOT DATA MOVE SERVO NECK TILT");
 }
 
-void servo_shoulder_cb(const std_msgs::Int16& cmd_msg) {
+void servo_shoulder_cb(const void * msgin) {
 
   int diff, steps, now, CurrPwm, NewPwm, delta = 6;
-
+  const std_msgs__msg__UInt16 * cmd_msg = (const std_msgs__msg__UInt16 *)msgin;
   //current servo value
   now = curr_pos[3];
   CurrPwm = now;
-  NewPwm = cmd_msg.data;
+  NewPwm = cmd_msg->data;
 
   /* determine interation "diff" from old to new position */
   diff = (NewPwm - CurrPwm)/abs(NewPwm - CurrPwm); // Should return +1 if NewPwm is bigger than CurrPwm, -1 otherwise.
@@ -192,7 +196,7 @@ void servo_shoulder_cb(const std_msgs::Int16& cmd_msg) {
 	shoulder.writeMicroseconds(now);
 	//Publishing data
 	Pwm.data = now;//ZZZ
-	// publisher.publish(&Pwm);//ZZZ
+	RCSOFTCHECK(rcl_publish(&publisher, &Pwm, NULL));//ZZZ
 	delay(20);
   }
   curr_pos[3] = now;
@@ -201,14 +205,14 @@ void servo_shoulder_cb(const std_msgs::Int16& cmd_msg) {
 	// hubert.loginfo("GOT DATA MOVE SERVO SHOULDER");
 }
 
-void servo_elbow_cb(const std_msgs::Int16& cmd_msg) {
+void servo_elbow_cb(const void * msgin) {
 
   int diff, steps, now, CurrPwm, NewPwm, delta = 6;
-
+  const std_msgs__msg__UInt16 * cmd_msg = (const std_msgs__msg__UInt16 *)msgin;
   //current servo value
   now = curr_pos[4];
   CurrPwm = now;
-  NewPwm = cmd_msg.data;
+  NewPwm = cmd_msg->data;
 
   /* determine interation "diff" from old to new position */
   diff = (NewPwm - CurrPwm)/abs(NewPwm - CurrPwm); // Should return +1 if NewPwm is bigger than CurrPwm, -1 otherwise.
@@ -220,7 +224,7 @@ void servo_elbow_cb(const std_msgs::Int16& cmd_msg) {
 	elbow.writeMicroseconds(now);
 	//Publishing data
 	Pwm.data = now;//ZZZ
-	// publisher.publish(&Pwm);//ZZZ
+	RCSOFTCHECK(rcl_publish(&publisher, &Pwm, NULL));//ZZZ
 	delay(20);
   }
   curr_pos[4] = now;
@@ -229,14 +233,14 @@ void servo_elbow_cb(const std_msgs::Int16& cmd_msg) {
   // hubert.loginfo("GOT DATA MOVE SERVO ELBOW");
 }
 
-void servo_gripper_ex_cb(const std_msgs::Int16& cmd_msg) {
+void servo_gripper_ex_cb(const void * msgin) {
 
   int diff, steps, now, CurrPwm, NewPwm, delta = 6;
-
+  const std_msgs__msg__UInt16 * cmd_msg = (const std_msgs__msg__UInt16 *)msgin;
   //current servo value
   now = curr_pos[5];
   CurrPwm = now;
-  NewPwm = cmd_msg.data;
+  NewPwm = cmd_msg->data;
 
   /* determine interation "diff" from old to new position */
   diff = (NewPwm - CurrPwm)/abs(NewPwm - CurrPwm); // Should return +1 if NewPwm is bigger than CurrPwm, -1 otherwise.
@@ -248,7 +252,7 @@ void servo_gripper_ex_cb(const std_msgs::Int16& cmd_msg) {
 	gripper.writeMicroseconds(now);
 	//Publishing data
 	Pwm.data = now;//ZZZ
-	// publisher.publish(&Pwm);//ZZZ
+	RCSOFTCHECK(rcl_publish(&publisher, &Pwm, NULL));//ZZZ
 	delay(20);
   }
   curr_pos[5] = now;
