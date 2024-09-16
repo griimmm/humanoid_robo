@@ -10,7 +10,7 @@
   >> rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=57600
   Note: correct port must be selected (ttyACM0, 1 or whatever)
   Same baud rate as in Arduino sketch (below)
-  >> ros2 topic echo robot_position
+  >> ros2 topic echo publisher
   >> ros2 topic pub /servo_body std_msgs/UInt16 <angle>
   >> ros2 topic pub /servo_neck_pan std_msgs/UInt16 <angle>
   >> ros2 topic pub /servo_neck_tilt std_msgs/UInt16 <angle>
@@ -34,15 +34,25 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include <ros2arduino.h>
-#include <std_msgs/msg/uint16.h>
+#include <micro_ros_arduino.h>
 #include <rcl/rcl.h>
 #include <rcl/error_handling.h>
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
+#include <std_msgs/msg/int16.h>
+
+std_msgs__msg__Int16 recv_msg;
+std_msgs__msg__Int16 Pwm;
+
+rcl_node_t node;
+
+//Allocator
+rcl_allocator_t allocator = rcl_get_default_allocator();
+rclc_support_t support;
 
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){printf("Failed status on line %d: %d. Aborting.\n",__LINE__,(int)temp_rc); return 1;}}
-#define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){printf("Failed status on line %d: %d. Continuing.\n",__LINE__,(int)temp_rc);}}
-
+// #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){printf("Failed status on line %d: %d. Continuing.\n",__LINE__,(int)temp_rc);}}
+#define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){}}
 //Servos
 Servo body;
 Servo headPan;
@@ -61,7 +71,7 @@ int new_servo_val[6];
 const int pos_min[] = {560, 550, 950, 750, 550, 550};
 const int pos_max[] = {2330, 2340, 2400, 2200, 2400, 2150};
 
-std_msgs__msg__UInt16 recv_msg;
+
 
 //Publisher
 rcl_publisher_t publisher;
@@ -76,7 +86,7 @@ rcl_subscription_t servo_gripper_ex;
 
 
 //ROS-setup
-void servo_body_ex(const std_msgs::UInt16& cmd_msg) {
+void servo_body_ex_cb(const std_msgs::Int16& cmd_msg) {
 
   int diff, steps, now, CurrPwm, NewPwm, delta = 6;
 
@@ -95,16 +105,16 @@ void servo_body_ex(const std_msgs::UInt16& cmd_msg) {
 	body.writeMicroseconds(now);
 	//Publishing data
 	Pwm.data = now;//ZZZ
-	robot_position.publish(&Pwm);//ZZZ
+	publisher.publish(&Pwm);//ZZZ
 	delay(20);
   }
   curr_pos[0] = now;
   delay(10);
 
-  hubert.loginfo("GOT DATA MOVE BODY");
+  // hubert.loginfo("GOT DATA MOVE BODY");
 }
 
-void servo_neck_pan(const std_msgs::UInt16& cmd_msg) {
+void servo_neck_pan_cb(const std_msgs::Int16& cmd_msg) {
 
   int diff, steps, now, CurrPwm, NewPwm, delta = 6;
 
@@ -123,16 +133,16 @@ void servo_neck_pan(const std_msgs::UInt16& cmd_msg) {
 	headPan.writeMicroseconds(now);
 	//Publishing data
 	Pwm.data = now;//ZZZ
-	robot_position.publish(&Pwm);
+	publisher.publish(&Pwm);
 	delay(20);
   }
   curr_pos[1] = now;
   delay(10);
   
-	hubert.loginfo("GOT DATA MOVE SERVO NECK PAN");
+	// hubert.loginfo("GOT DATA MOVE SERVO NECK PAN");
 }
 
-void servo_neck_tilt(const std_msgs::UInt16& cmd_msg) {
+void servo_neck_tilt_cb(const std_msgs::Int16& cmd_msg) {
 
   int diff, steps, now, CurrPwm, NewPwm, delta = 6;
 
@@ -151,16 +161,16 @@ void servo_neck_tilt(const std_msgs::UInt16& cmd_msg) {
 	headTilt.writeMicroseconds(now);
 	//Publishing data
 	Pwm.data = now;//ZZZ
-	robot_position.publish(&Pwm);
+	publisher.publish(&Pwm);
 	delay(20);
   }
   curr_pos[2] = now;
   delay(10);
 
-	hubert.loginfo("GOT DATA MOVE SERVO NECK TILT");
+	// hubert.loginfo("GOT DATA MOVE SERVO NECK TILT");
 }
 
-void servo_shoulder(const std_msgs::UInt16& cmd_msg) {
+void servo_shoulder_cb(const std_msgs::Int16& cmd_msg) {
 
   int diff, steps, now, CurrPwm, NewPwm, delta = 6;
 
@@ -179,16 +189,16 @@ void servo_shoulder(const std_msgs::UInt16& cmd_msg) {
 	shoulder.writeMicroseconds(now);
 	//Publishing data
 	Pwm.data = now;//ZZZ
-	robot_position.publish(&Pwm);//ZZZ
+	publisher.publish(&Pwm);//ZZZ
 	delay(20);
   }
   curr_pos[3] = now;
   delay(10);
   
-	hubert.loginfo("GOT DATA MOVE SERVO SHOULDER");
+	// hubert.loginfo("GOT DATA MOVE SERVO SHOULDER");
 }
 
-void servo_elbow(const std_msgs::UInt16& cmd_msg) {
+void servo_elbow_cb(const std_msgs::Int16& cmd_msg) {
 
   int diff, steps, now, CurrPwm, NewPwm, delta = 6;
 
@@ -207,16 +217,16 @@ void servo_elbow(const std_msgs::UInt16& cmd_msg) {
 	elbow.writeMicroseconds(now);
 	//Publishing data
 	Pwm.data = now;//ZZZ
-	robot_position.publish(&Pwm);//ZZZ
+	publisher.publish(&Pwm);//ZZZ
 	delay(20);
   }
   curr_pos[4] = now;
   delay(10);
 
-  hubert.loginfo("GOT DATA MOVE SERVO ELBOW");
+  // hubert.loginfo("GOT DATA MOVE SERVO ELBOW");
 }
 
-void servo_gripper_ex(const std_msgs::UInt16& cmd_msg) {
+void servo_gripper_ex_cb(const std_msgs::Int16& cmd_msg) {
 
   int diff, steps, now, CurrPwm, NewPwm, delta = 6;
 
@@ -235,13 +245,13 @@ void servo_gripper_ex(const std_msgs::UInt16& cmd_msg) {
 	gripper.writeMicroseconds(now);
 	//Publishing data
 	Pwm.data = now;//ZZZ
-	robot_position.publish(&Pwm);//ZZZ
+	publisher.publish(&Pwm);//ZZZ
 	delay(20);
   }
   curr_pos[5] = now;
   delay(10);
   
-  hubert.loginfo("GOT DATA MOVE SERVO GRIPPER");
+  // hubert.loginfo("GOT DATA MOVE SERVO GRIPPER");
 }
 
 
@@ -262,7 +272,7 @@ void servo_gripper_ex(const std_msgs::UInt16& cmd_msg) {
   // hubert.subscribe(sub_gripper);
 
   //Advertise
-  // hubert.advertise(robot_position);
+  // hubert.advertise(publisher);
 
 	// //Attach each joint servo
 	// //and write each init position
@@ -300,74 +310,70 @@ int main() {
 
   Serial.begin(57600); // Starts the serial communication
 
-	//Allocator
-  rcl_allocator_t allocator = rcl_get_default_allocator();
-	rclc_support_t support;
-
 	// create init_options
 	RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
 
 	// create node
-	rcl_node_t node;
+	
 	RCCHECK(rclc_node_init_default(&node, "hubert", "", &support));
 
 	// create publisher
 	RCCHECK(rclc_publisher_init_default(
 		&publisher,
 		&node,
-		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16),
-		"robot_position"));
+		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16),
+		"robot_state_publisher"));
 
   // Update callbacks according to ros2 conventions
 	// create subscriber servo_body
 	RCCHECK(rclc_subscription_init_default(
-		&servo_body_ex,
+		&servo_body_ex_cb,
 		&node,
-		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16),
+		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16),
 		"servo_body"));
 
 	// create subscriber servo_neck_pan
 	RCCHECK(rclc_subscription_init_default(
-		&servo_neck_pan,
+		&servo_neck_pan_cb,
 		&node,
-		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16),
+		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16),
 		"servo_neck_pan"));
 
 	// create subscriber servo_neck_tilt
 	RCCHECK(rclc_subscription_init_default(
-		&servo_neck_tilt,
+		&servo_neck_tilt_cb,
 		&node,
-		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16),
+		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16),
 		"servo_neck_tilt"));
 	// create subscriber servo_shoulder
 	RCCHECK(rclc_subscription_init_default(
-		&servo_shoulder,
+		&servo_shoulder_cb,
 		&node,
-		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16),
+		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16),
 		"servo_shoulder"));
 	// create subscriber servo_elbow
 	RCCHECK(rclc_subscription_init_default(
-		&servo_elbow,
+		&servo_elbow_cb,
 		&node,
-		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16),
+		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16),
 		"servo_elbow"));
 	
 	// create subscriber 6
 	RCCHECK(rclc_subscription_init_default(
-		&servo_gripper_ex,
+		&servo_gripper_ex_cb,
 		&node,
-		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16),
+		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16),
 		"servo_gripper"));
 
 	// create executor
 	rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();
 	RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
-	RCCHECK(rclc_executor_add_subscription(&executor, &servo_body_ex, &recv_msg, &servo_body_ex, ON_NEW_DATA));
-  RCCHECK(rclc_executor_add_subscription(&executor, &servo_neck_pan, &recv_msg, &servo_neck_pan, ON_NEW_DATA));
-  RCCHECK(rclc_executor_add_subscription(&executor, &servo_neck_tilt, &recv_msg, &servo_neck_tilt, ON_NEW_DATA));
-  RCCHECK(rclc_executor_add_subscription(&executor, &servo_shoulder, &recv_msg, &servo_shoulder, ON_NEW_DATA));
-  RCCHECK(rclc_executor_add_subscription(&executor, &servo_elbow, &recv_msg, &servo_elbow, ON_NEW_DATA));
-  RCCHECK(rclc_executor_add_subscription(&executor, &servo_gripper_ex, &recv_msg, &servo_gripper_ex, ON_NEW_DATA));
+	RCCHECK(rclc_executor_add_subscription(&executor, &servo_body_ex, &recv_msg, &servo_body_ex_cb, ON_NEW_DATA));
+  RCCHECK(rclc_executor_add_subscription(&executor, &servo_neck_pan, &recv_msg, &servo_neck_pan_cb, ON_NEW_DATA));
+  RCCHECK(rclc_executor_add_subscription(&executor, &servo_neck_tilt, &recv_msg, &servo_neck_tilt_cb, ON_NEW_DATA));
+  RCCHECK(rclc_executor_add_subscription(&executor, &servo_shoulder, &recv_msg, &servo_shoulder_cb, ON_NEW_DATA));
+  RCCHECK(rclc_executor_add_subscription(&executor, &servo_elbow, &recv_msg, &servo_elbow_cb, ON_NEW_DATA));
+  RCCHECK(rclc_executor_add_subscription(&executor, &servo_gripper_ex, &recv_msg, &servo_gripper_ex_cb, ON_NEW_DATA));
 
   //Attach each joint servo
 	//and write each init position
