@@ -41,7 +41,7 @@
 #include <std_msgs/msg/int16.h>
 #include <std_msgs/msg/u_int16.h>
 
-std_msgs__msg__UInt16 recv_msg;
+std_msgs__msg__UInt16 body_msg, neck_pan_msg, neck_tilt_msg, shoulder_msg, elbow_msg, grip_msg;
 std_msgs__msg__UInt16 Pwm;
 
 rcl_node_t node;
@@ -327,12 +327,12 @@ void setup() {
 
 	
 	RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
-	RCCHECK(rclc_executor_add_subscription(&executor, &servo_body_ex, &recv_msg, &servo_body_ex_cb, ON_NEW_DATA));
-  RCCHECK(rclc_executor_add_subscription(&executor, &servo_neck_pan, &recv_msg, &servo_neck_pan_cb, ON_NEW_DATA));
-  RCCHECK(rclc_executor_add_subscription(&executor, &servo_neck_tilt, &recv_msg, &servo_neck_tilt_cb, ON_NEW_DATA));
-  RCCHECK(rclc_executor_add_subscription(&executor, &servo_shoulder, &recv_msg, &servo_shoulder_cb, ON_NEW_DATA));
-  RCCHECK(rclc_executor_add_subscription(&executor, &servo_elbow, &recv_msg, &servo_elbow_cb, ON_NEW_DATA));
-  RCCHECK(rclc_executor_add_subscription(&executor, &servo_gripper_ex, &recv_msg, &servo_gripper_ex_cb, ON_NEW_DATA));
+	RCCHECK(rclc_executor_add_subscription(&executor, &servo_body_ex, &body_msg, &servo_body_ex_cb, ON_NEW_DATA));
+  RCCHECK(rclc_executor_add_subscription(&executor, &servo_neck_pan, &neck_pan_msg, &servo_neck_pan_cb, ON_NEW_DATA));
+  RCCHECK(rclc_executor_add_subscription(&executor, &servo_neck_tilt, &neck_tilt_msg, &servo_neck_tilt_cb, ON_NEW_DATA));
+  RCCHECK(rclc_executor_add_subscription(&executor, &servo_shoulder, &shoulder_msg, &servo_shoulder_cb, ON_NEW_DATA));
+  RCCHECK(rclc_executor_add_subscription(&executor, &servo_elbow, &elbow_msg, &servo_elbow_cb, ON_NEW_DATA));
+  RCCHECK(rclc_executor_add_subscription(&executor, &servo_gripper_ex, &grip_msg, &servo_gripper_ex_cb, ON_NEW_DATA));
 
   // //Attach each joint servo
 	// //and write each init position
@@ -369,9 +369,9 @@ void loop() {
   // Serial.println("Welcome");
   RCCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100)));
   delay(250);
-  // RCCHECK(rcl_subscription_fini(&servo_body_ex, &node));
-  // RCCHECK(rcl_subscription_fini(&servo_neck_pan, &node));
-  // RCCHECK(rcl_subscription_fini(&servo_neck_tilt, &node));
+  RCCHECK(rcl_subscription_fini(&servo_body_ex, &node));
+  RCCHECK(rcl_subscription_fini(&servo_neck_pan, &node));
+  RCCHECK(rcl_subscription_fini(&servo_neck_tilt, &node));
   // RCCHECK(rcl_subscription_fini(&servo_shoulder, &node));
   // RCCHECK(rcl_subscription_fini(&servo_elbow, &node));
   // RCCHECK(rcl_subscription_fini(&servo_gripper_ex, &node));
