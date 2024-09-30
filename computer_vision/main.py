@@ -86,8 +86,16 @@ def main():
         if key == ord('q'):
             break
         elif key == ord('h'):
-            homography_matrix = get_homography_matrix(undistorted_image)
-            cv2.imshow("Homography window", undistorted_image)
+            copy_img = np.copy(undistorted_image)
+            cv2.rectangle(copy_img, (0,0), (w/2,h), (0,0,0), -1)
+            horizontal_plane_homography_matrix = get_homography_matrix(copy_img)
+
+            other_copy_img = np.copy(undistorted_image)
+            cv2.rectangle(other_copy_img, (w/2,0), (w,h), (0,0,0), -1)
+            vertical_plane_homography_matrix = get_homography_matrix(other_copy_img)
+
+            cv2.imshow("Homography window 1", copy_img)
+            cv2.imshow("Homography window 2", other_copy_img)
 
     cv2.destroyAllWindows()
 
