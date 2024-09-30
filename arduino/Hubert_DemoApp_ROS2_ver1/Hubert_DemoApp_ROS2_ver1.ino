@@ -46,12 +46,12 @@ std_msgs__msg__UInt16 Pwm;
 
 rcl_node_t node;
 
-// //Allocator
+//Allocator
 rcl_allocator_t allocator;
 rclc_support_t support;
 
-// // create executor
-rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();
+// create executor
+rclc_executor_t executor;
 
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){}} //printf("Failed status on line %d: %d. Aborting.\n",__LINE__,(int)temp_rc); return 1;
 // // #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){printf("Failed status on line %d: %d. Continuing.\n",__LINE__,(int)temp_rc);}}
@@ -111,8 +111,6 @@ void servo_body_ex_cb(const void * msgin) {
   RCSOFTCHECK(rcl_publish(&publisher, &Pwm, NULL));
 	delay(20);
   }
-  Serial.println("YAhoooo");
-  Serial.println(Pwm.data);
   curr_pos[0] = now;
   delay(10);
 
@@ -260,16 +258,15 @@ void servo_gripper_ex_cb(const void * msgin) {
 }
 
 
-
-//loop or main ?? main replaces setup and loop
-//Recheck structure for loop and setup
 // int main()
 void setup() {
   
   // Serial.begin(9600); // Starts the serial communication
 	set_microros_transports();
+  delay(100);
   // // create init_options
 	allocator = rcl_get_default_allocator();
+  
   RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
 
 	// // create node
@@ -284,15 +281,17 @@ void setup() {
 		"robot_state_publisher"));
 
   // Serial.println("Check");
-  // // Update callbacks according to ros2 conventions
-	// // create subscriber servo_body
-	RCCHECK(rclc_subscription_init_default(
+  // Update callbacks according to ros2 conventions
+	// create subscriber servo_body
+  
+
+  RCCHECK(rclc_subscription_init_default(
 		&servo_body_ex,
 		&node,
 		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16),
     "servo_body"));
 
-	// // create subscriber servo_neck_pan
+	// create subscriber servo_neck_pan
 	RCCHECK(rclc_subscription_init_default(
 		&servo_neck_pan,
 		&node,
@@ -326,7 +325,8 @@ void setup() {
 		"servo_gripper"));
 
 	
-	RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
+	RCCHECK(rclc_executor_init(&executor, &support.context, 7, &allocator));
+  
 	RCCHECK(rclc_executor_add_subscription(&executor, &servo_body_ex, &body_msg, &servo_body_ex_cb, ON_NEW_DATA));
   RCCHECK(rclc_executor_add_subscription(&executor, &servo_neck_pan, &neck_pan_msg, &servo_neck_pan_cb, ON_NEW_DATA));
   RCCHECK(rclc_executor_add_subscription(&executor, &servo_neck_tilt, &neck_tilt_msg, &servo_neck_tilt_cb, ON_NEW_DATA));
@@ -367,16 +367,7 @@ void setup() {
 void loop() {
   
   // Serial.println("Welcome");
-  RCCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100)));
-  delay(250);
-  RCCHECK(rcl_subscription_fini(&servo_body_ex, &node));
-  RCCHECK(rcl_subscription_fini(&servo_neck_pan, &node));
-  RCCHECK(rcl_subscription_fini(&servo_neck_tilt, &node));
-  // RCCHECK(rcl_subscription_fini(&servo_shoulder, &node));
-  // RCCHECK(rcl_subscription_fini(&servo_elbow, &node));
-  // RCCHECK(rcl_subscription_fini(&servo_gripper_ex, &node));
+  rclc_executor_spin(&executor);
+  // delay(250);
   
-  // RCCHECK(rcl_publisher_fini(&publisher, &node));
-
-	// RCCHECK(rcl_node_fini(&node));
 }
