@@ -12,8 +12,10 @@ def find_foam(frame):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     # these may need fine tuning based on the clour of the foam that we may use
-    lower_white = np.array([0,0,168], dtype=np.uint8)
-    upper_white = np.array([18,100,255], dtype=np.uint8)
+    # lower_white = np.array([0,0,168], dtype=np.uint8)
+    # upper_white = np.array([18,100,255], dtype=np.uint8)
+    lower_white = np.array([20,20,120], dtype=np.uint8)
+    upper_white = np.array([40,80,200], dtype=np.uint8)
 
     # lower_white = np.array([0,0,168], dtype=np.uint8)
     # upper_white = np.array([172,111,255], dtype=np.uint8)
@@ -24,9 +26,8 @@ def find_foam(frame):
     # kernel = np.ones((3,3), np.uint8)
     # color_mask = cv2.erode(cv2.dilate(color_mask, kernel, iterations=3), kernel, iterations=3)
 
-    
-    kernel = np.ones((3,3), np.uint8)
-    color_mask = cv2.dilate(cv2.erode(color_mask, kernel, iterations=1), kernel, iterations=1)
+    # kernel = np.ones((3,3), np.uint8)
+    # color_mask = cv2.dilate(cv2.erode(color_mask, kernel, iterations=1), kernel, iterations=1)
     # color_mask = cv2.erode(cv2.dilate(color_mask, kernel, iterations=20), kernel, iterations=20)
 
     cnts = cv2.findContours(color_mask,cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -56,7 +57,7 @@ def main():
     images = []
 
     for i in range(4):
-        img_path = f'eg_img/img_{i+1}.jpeg'
+        img_path = f'styrofoam_imgcopy/img_{i+1}.jpg'
         w = 800
         h = 600
         img = cv2.imread(img_path)

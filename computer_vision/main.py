@@ -21,7 +21,8 @@ def get_homography_matrix(img):
     Get homography matrix relating image coordinates to xy-coordinates on the flat surface containing the checkerboard
     """
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    checker_board = (6, 8)
+    # checker_board = (6, 8)
+    checker_board = (1,2)
     ret, all_square_corners = cv2.findChessboardCorners(gray, checker_board, cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_NORMALIZE_IMAGE)
     # Corner order:
     # 1-------2
@@ -41,7 +42,9 @@ def get_homography_matrix(img):
         cv2.circle(img, corner, 3, (0,0,255), -1)
     # end test
 
-    corners_xy_coords_in_plane = np.array([(801,-299),(801,-120),(581,-120),(581,-299)])
+    # corners_xy_coords_in_plane = np.array([(801,-299),(801,-120),(581,-120),(581,-299)])
+    corners_xy_coords_in_plane = np.array([(395,-106),(395,-123),(361,-106),(361,-123)]) # height diff. +230mm rel. to table
+    
     if not ret:
         return None
     else:

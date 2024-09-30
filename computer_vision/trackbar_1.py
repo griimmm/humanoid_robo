@@ -70,7 +70,7 @@ def main():
     images = []
 
     for i in range(4):
-        img_path = f'eg_img/img_{i+1}.jpeg'
+        img_path = f'styrofoam_imgcopy/img_{i+1}.jpg'
         w = 800
         h = 600
         img = cv2.imread(img_path)

@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 for i in range(4):
-    img_path = f'styrofoam_img/img_{i+1}.jpg'
+    img_path = f'styrofoam_imgcopy/img_{i+1}.jpg'
     # Load the image
     image = cv2.imread(img_path)
 
@@ -20,7 +20,6 @@ for i in range(4):
     cv2.setMouseCallback('image', get_hsv_value)
 
     # Display the image
-
     while True:
         cv2.imshow('image', image)
         if cv2.waitKey(1) & 0xFF == 27:  # Press 'Esc' to exit
