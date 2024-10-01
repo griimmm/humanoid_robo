@@ -8,6 +8,12 @@
       </geometry>
       <origin rpy="0 1.57075 0" xyz=" 0 0 0.0275"/>
     </visual>
+    <collision>
+	    <geometry>
+		    <box size="0.055 0.02 0.02"/>
+	    </geometry>
+	    <origin rpy="0 1.57075 0" xyz=" 0 0 0.0275"/>
+    </collision>
   </link>
 
   <link name="robot_body">
@@ -17,6 +23,12 @@
       </geometry>
       <origin rpy="0 1.57075 0" xyz="0 0 0.163"/>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.315 0.02 0.02"/>
+      </geometry>
+      <origin rpy="0 1.57075 0" xyz="0 0 0.163"/>
+    </collision>
   </link>
 
   <link name="robot_shoulder">
@@ -26,6 +38,12 @@
       </geometry>
       <origin rpy=" 0 0 1.57075" xyz="0 0 0"/>
     </visual>
+    <collision>
+      <geometry>
+        <box size="0.216 0.02 0.02"/>
+      </geometry>
+      <origin rpy=" 0 0 1.57075" xyz="0 0 0"/>
+    </collision>
   </link>
 
   <link name="robot_arm">
@@ -35,6 +53,12 @@
       </geometry>
       <origin rpy=" 0 0 1.57075" xyz="0 -0.044 0"/>
     </visual>
+    <collision>
+    <geometry>
+        <box size="0.088 0.02 0.02"/>
+      </geometry>
+      <origin rpy=" 0 0 1.57075" xyz="0 -0.044 0"/>
+    </collision>
   </link>
 
   <link name="robot_elbow">
@@ -44,6 +68,12 @@
       </geometry>
       <origin rpy=" 0 0 1.57075" xyz="0 -.102 0"/>
     </visual>
+    <collision>
+    <geometry>
+        <box size="0.204 0.02 0.02"/>
+      </geometry>
+      <origin rpy=" 0 0 1.57075" xyz="0 -.102 0"/>
+    </collision>
   </link>
 
   <joint name="base_joint" type="revolute">
@@ -62,7 +92,7 @@
 
   <joint name="shoulder_joint" type="revolute">
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-1.57" upper="0" velocity="0.5"/>
+    <limit effort="1000.0" lower="-0.785" upper="0.785" velocity="0.5"/>
     <parent link="robot_shoulder"/>
     <child link="robot_arm"/>
     <origin rpy=" 1.57075 0 0" xyz="0.034 -0.108 0"/>
@@ -70,7 +100,7 @@
   
   <joint name="elbow_joint" type="revolute">
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-1.57" upper="0.0" velocity="0.5"/>
+    <limit effort="1000.0" lower="-0.785" upper="0.785" velocity="0.5"/>
     <parent link="robot_arm"/>
     <child link="robot_elbow"/>
     <origin rpy=" 0 0 0" xyz="0.015 -0.088 -0.005"/>
