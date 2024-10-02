@@ -64,42 +64,30 @@ def translate_coordinates(x, y, H, scale_factor=1):
     return float(point2[0]), float(point2[1])
 
 def main():
-    cap = cv2.VideoCapture(1)
-    while True:
-        success, img = cap.read()
-
-        # TODO: write code here idk
+    for i in range(23):
+        img_path = f'styrofoam_imgcopy/img_{i}.jpg'
+        img = cv2.imread(img_path)
 
         h,w = img.shape[:2]
+        img = get_undistorted_image(img, camera_matrix, distortion_coefficients)
+        cv2.imshow("Undistorted", img)
 
-        # cv2.line(img, (int(h/2), 0), (int(h/2), w), (0,0,255), 2)
-        # cv2.imshow("Webcam", img)
-        undistorted_image = get_undistorted_image(img, camera_matrix, distortion_coefficients)
-        cv2.imshow("Undistorted", undistorted_image)
+        copy_img = np.copy(img)
+        cv2.rectangle(copy_img, (0,0), (int(w/2),h), (0,0,0), -1)
+        horizontal_plane_homography_matrix = get_homography_matrix(copy_img)
 
-        # gray1 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        # gray2 = cv2.cvtColor(undistorted_image, cv2.COLOR_BGR2GRAY)
-        # diff = cv2.absdiff(gray1, gray2)
-        # cv2.imshow("diff(img1, img2)", diff)
-        # thresh = cv2.threshold(diff, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-        # cv2.imshow("Threshold", thresh)
+        other_copy_img = np.copy(img)
+        cv2.rectangle(other_copy_img, (int(w/2),0), (w,h), (0,0,0), -1)
+        vertical_plane_homography_matrix = get_homography_matrix(other_copy_img)
 
-        key = cv2.waitKey(1000)
+        cv2.imshow("Homography window 1", copy_img)
+        cv2.imshow("Homography window 2", other_copy_img)
+
+        # TODO: use homography matrices for stuff
+
+        key = cv2.waitKey(0)
         if key == ord('q'):
             break
-        elif key == ord('h'):
-            copy_img = np.copy(undistorted_image)
-            cv2.rectangle(copy_img, (0,0), (w/2,h), (0,0,0), -1)
-            horizontal_plane_homography_matrix = get_homography_matrix(copy_img)
-
-            other_copy_img = np.copy(undistorted_image)
-            cv2.rectangle(other_copy_img, (w/2,0), (w,h), (0,0,0), -1)
-            vertical_plane_homography_matrix = get_homography_matrix(other_copy_img)
-
-            cv2.imshow("Homography window 1", copy_img)
-            cv2.imshow("Homography window 2", other_copy_img)
-
-    cv2.destroyAllWindows()
 
 if __name__=='__main__':
     main()
