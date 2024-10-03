@@ -23,6 +23,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'trial = move_ee.joint_state_pub:main'
         ],
     },
 )
