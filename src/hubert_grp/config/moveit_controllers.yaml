@@ -4,15 +4,14 @@ moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControll
 
 moveit_simple_controller_manager:
   controller_names:
-    - hubert_controller
+    - hubert_grp_controller
 
-  hubert_controller:
+  hubert_grp_controller:
     type: FollowJointTrajectory
     action_ns: follow_joint_trajectory
     default: true
     joints:
       - base_joint
-      - body_to_shoulder
       - shoulder_joint
       - elbow_joint
     action_ns: follow_joint_trajectory

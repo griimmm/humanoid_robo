@@ -1,5 +1,6 @@
 import rclpy
 from rclpy.node import Node
+import numpy as np
 
 from sensor_msgs.msg import JointState
 from std_msgs.msg import UInt16
@@ -13,7 +14,7 @@ class MinimalSubscriber(Node):
         self.range = 1750 #Ideal 1800
         self.subscription = self.create_subscription(
             JointState,
-            'topic',
+            'joint_states',
             self.listener_callback,
             10)
         self.publisher_1 = self.create_publisher(UInt16, 'servo_body', 10)
@@ -24,22 +25,24 @@ class MinimalSubscriber(Node):
         self.subscription  
 
     def listener_callback(self, msg):
-        self.get_logger().info('I heard: "%s"' % msg.data)
-        self.some_var = msg.data.position
+       # self.get_logger().info('I heard: "%s"' % msg)
+        self.some_var = msg.position
 
     def timer_callback(self):
         msg1 = UInt16()
         msg2 = UInt16()
         msg3 = UInt16()
         try:
-            msg1.data = ((self.some_var[0] - self.start)/self.range)*180 #Degree conversions
-            msg2.data = ((self.some_var[1] - self.start)/self.range)*180 #Degree conversions
-            msg3.data = ((self.some_var[2] - self.start)/self.range)*180 #Degree conversions
+            # print(self.some_var[2],'calculated:',(self.some_var[2]/np.pi)*1800)
+            msg1.data = int(((self.some_var[0] - self.start)/self.range)*180) #Degree conversions
+            msg2.data = int(((self.some_var[1] - self.start)/self.range)*180) #Degree conversions
+            msg3.data = int(((self.some_var[2] - self.start)/self.range)*180) #Degree conversions
         except:
             print("")
+        # print(msg1,msg2,msg3)
         self.publisher_1.publish(msg1)
-        self.publisher_2.publish(msg1)
-        self.publisher_3.publish(msg1)
+        self.publisher_2.publish(msg2)
+        self.publisher_3.publish(msg3)
 
         # self.get_logger().info('Publishing: "%s"' % msg.data)
         
