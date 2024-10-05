@@ -33,13 +33,11 @@ class MinimalSubscriber(Node):
         msg2 = UInt16()
         msg3 = UInt16()
         try:
-            # print(self.some_var[2],'calculated:',(self.some_var[2]/np.pi)*1800)
-            msg1.data = int(((self.some_var[0] - self.start)/self.range)*180) #Degree conversions
-            msg2.data = int(((self.some_var[1] - self.start)/self.range)*180) #Degree conversions
-            msg3.data = int(((self.some_var[2] - self.start)/self.range)*180) #Degree conversions
+            msg1.data = int((self.some_var[0]/np.pi)*1800)+500 #radians to PCM values, angle range (0,pi) 
+            msg2.data = int((self.some_var[1]/np.pi)*1800)+500 #radians to PCM values, angle range (0,pi) 
+            msg3.data = int((self.some_var[2]/np.pi)*1800)+500 #radians to PCM values, angle range (0,pi/2) 
         except:
             print("")
-        # print(msg1,msg2,msg3)
         self.publisher_1.publish(msg1)
         self.publisher_2.publish(msg2)
         self.publisher_3.publish(msg3)

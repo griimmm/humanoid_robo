@@ -17,6 +17,7 @@ hubert_grp_controller:
       - shoulder_joint
       - elbow_joint
     command_interfaces:
-      []
+      - position
     state_interfaces:
-      []
+      - position
+      - velocity

@@ -7,4 +7,19 @@ moveit_setup_assistant_config:
   package_settings:
     author_name: damodar datta
     author_email: damodark@chalmers.se
-    generated_timestamp: 1728037951
+    generated_timestamp: 1728151432
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
