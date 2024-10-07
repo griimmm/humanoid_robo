@@ -37,12 +37,12 @@ class MinimalSubscriber(Node):
         msg3 = UInt16()
         
         try:
-            self.prev_1 = int((self.some_var[0]/np.pi)*self.range)+self.start
-            self.prev_2 = int((self.some_var[1]/np.pi)*self.range)+self.start
-            self.prev_3 = int((self.some_var[2]/np.pi)*self.range)+self.start
-            msg1.data = int((self.some_var[0]/np.pi)*self.range)+self.start #radians to PCM values, angle range (0,pi) 
-            msg2.data = int((self.some_var[1]/np.pi)*self.range)+self.start #radians to PCM values, angle range (0,pi) 
-            msg3.data = int((self.some_var[2]/np.pi)*self.range)+self.start #radians to PCM values, angle range (0,pi/2) 
+            self.prev_1 = self.range - int((self.some_var[0]/np.pi)*self.range)+self.start
+            self.prev_2 = self.range - int((self.some_var[1]/np.pi)*self.range)+self.start
+            self.prev_3 = int(((np.pi/2 +self.some_var[2])/np.pi)*self.range)+self.start
+            msg1.data = self.range - int((self.some_var[0]/np.pi)*self.range)+self.start #radians to PCM values, angle range (0,pi) 
+            msg2.data = self.range - int((self.some_var[1]/np.pi)*self.range)+self.start #radians to PCM values, angle range (0,pi) 
+            msg3.data = int(( (np.pi/2 +self.some_var[2])/np.pi)*self.range)+self.start #radians to PCM values, angle range (0,pi/2) 
         except:
             print("self", self.prev_1)
             msg1.data = self.prev_1 #radians to PCM values, angle range (0,pi) 
