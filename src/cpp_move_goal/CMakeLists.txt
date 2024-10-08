@@ -1,0 +1,62 @@
+cmake_minimum_required(VERSION 3.8)
+project(cpp_move_goal)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# find dependencies
+find_package(ament_cmake REQUIRED)
+# uncomment the following section in order to fill in
+# further dependencies manually.
+find_package(Boost REQUIRED)
+find_package(moveit_common REQUIRED)
+moveit_package()
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # the following line skips the linter which checks for copyrights
+  # comment the line when a copyright and license is added to all source files
+  set(ament_cmake_copyright_FOUND TRUE)
+  # the following line skips cpplint (only works in a git repo)
+  # comment the line when this package is in a git repo and when
+  # a copyright and license is added to all source files
+  set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+find_package(
+  control_msgs)
+find_package(Eigen3)
+  
+find_package(interactive_markers)
+find_package(moveit_core)
+find_package(moveit)
+find_package(moveit_msgs)
+find_package(moveit_ros_planning)
+find_package(moveit_ros_planning_interface)
+find_package(moveit_ros_move_group)
+find_package(moveit_servo)
+find_package(moveit_task_constructor_core)
+find_package(moveit_visual_tools)
+find_package(pluginlib)
+find_package(rclcpp)
+find_package(rclcpp_action)
+find_package(rviz_visual_tools)
+find_package(tf2_geometry_msgs)
+find_package(tf2_geometry_msgs)
+find_package(tf2_ros)
+  
+
+add_executable(try_moveit
+    src/moveit_trial.cpp)
+target_include_directories(try_moveit
+  PUBLIC include)
+ament_target_dependencies(try_moveit
+  ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost)
+
+install(TARGETS try_moveit
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+ament_package()
