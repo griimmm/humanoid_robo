@@ -5,12 +5,24 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+include_directories(/opt/ros/humble/include)
+include_directories(/opt/ros/humble/include/urdf)
+include_directories(/opt/ros/humble/include/moveit_msgs)
+include_directories(/opt/ros/humble/include/rosidl_runtime_cpp)
+include_directories(/opt/ros/humble/include/rosidl_runtime_c)
+include_directories(/usr/include/eigen3)
+include_directories(/opt/ros/humble/include/rclcpp)
+include_directories(/opt/ros/humble/include/rcl)
+include_directories(/opt/ros/humble/include/rcutils)
+include_directories(/opt/ros/humble/include/geometry_msgs)
+include_directories(/opt/ros/humble/include/graph_msgs)
+include_directories(/opt/ros/humble/include/rmw)
 # find dependencies
 find_package(ament_cmake REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 find_package(Boost REQUIRED)
-find_package(moveit_common REQUIRED)
+find_package(moveit_common)
 moveit_package()
 
 if(BUILD_TESTING)
@@ -28,7 +40,6 @@ endif()
 find_package(
   control_msgs)
 find_package(Eigen3)
-  
 find_package(interactive_markers)
 find_package(moveit_core)
 find_package(moveit)
@@ -46,6 +57,13 @@ find_package(rviz_visual_tools)
 find_package(tf2_geometry_msgs)
 find_package(tf2_geometry_msgs)
 find_package(tf2_ros)
+
+set(THIS_PACKAGE_INCLUDE_DEPENDS
+  pluginlib
+  moveit_core
+  moveit_ros_planning
+  Boost
+)
   
 
 add_executable(try_moveit
