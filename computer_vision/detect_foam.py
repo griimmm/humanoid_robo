@@ -8,7 +8,7 @@ def find_foam(frame):
     2) select and draw the largest contour
     3) bitwise-and with the frame to get the contour in frame
     4) mark the top right corner of the contour
-    5) Draw a line from top right to the left edge
+    5) Draw a line from top right to the left edge 
     '''
     font = cv2.FONT_HERSHEY_COMPLEX 
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -78,7 +78,7 @@ def main():
     images = []
 
     for i in range(5,21):
-        img_path = f'/home/rishikesh/Desktop/hr/humanoid_robo/computer_vision/styrofoam_newv3/img_{i+1}.jpg'
+        img_path = f'/home/rishikesh/Desktop/hr/humanoid_robo/computer_vision/styrofoam_newv4/img_{i+1}.jpg'
         w = 800
         h = 600
         img = cv2.imread(img_path)
