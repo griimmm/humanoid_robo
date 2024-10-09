@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: move_ee
+    relative_path: move_ee/urdf/hubert.urdf
+  srdf:
+    relative_path: config/hubert.srdf
+  package_settings:
+    author_name: damodar datta
+    author_email: damodark@chalmers.se
+    generated_timestamp: 1728296306

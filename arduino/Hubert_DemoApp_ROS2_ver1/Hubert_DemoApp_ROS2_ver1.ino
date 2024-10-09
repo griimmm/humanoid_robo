@@ -25,6 +25,8 @@
   by Krister Wolff
   modified 23 Jun 2020
   by Krister Wolff
+  modified 20 September 2024
+  Abishek Swaminathan
 
   This example code is in the public domain.
 
@@ -83,7 +85,7 @@ Servo gripper;
 // //Init position of all servos
 const int servo_pins[] = {3, 5, 6, 9, 10, 11};
 
-const int pos_init[] = {1700, 1500, 2000, 2200, 1650, 1600};
+const int pos_init[] = {1420, 1500, 1800, 2200, 1650, 1600}; //{1700, 1500, 2000, 2200, 1650, 1600};
 int curr_pos[6];
 int new_servo_val[6];
 
@@ -271,30 +273,26 @@ void servo_gripper_ex_cb(const void * msgin) {
 // int main()
 void setup() {
   
-  // Serial.begin(9600); // Starts the serial communication
 	set_microros_transports();
   delay(100);
-  // // create init_options
+  // create init_options
 	allocator = rcl_get_default_allocator();
   
   RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
 
-	// // create node
+	// create node
 	
 	RCCHECK(rclc_node_init_default(&node, "hubert", "", &support));
 
-	// // create publisher
+	// create publisher
 	RCCHECK(rclc_publisher_init_default(
 		&publisher,
 		&node,
 		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16),
 		"robot_state_publisher"));
 
-  // Serial.println("Check");
-  // Update callbacks according to ros2 conventions
-	// create subscriber servo_body
-  
 
+	// create subscriber servo_body
   RCCHECK(rclc_subscription_init_default(
 		&servo_body_ex,
 		&node,
@@ -308,7 +306,7 @@ void setup() {
 		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16),
 		"servo_neck_pan"));
 
-	// // create subscriber servo_neck_tilt
+	// create subscriber servo_neck_tilt
 	RCCHECK(rclc_subscription_init_default(
 		&servo_neck_tilt,
 		&node,
@@ -327,7 +325,7 @@ void setup() {
 		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16),
 		"servo_elbow"));
 	
-	// // create subscriber 6
+	// create subscriber 6
 	RCCHECK(rclc_subscription_init_default(
 		&servo_gripper_ex,
 		&node,
@@ -336,8 +334,8 @@ void setup() {
 
 	
 	
-  // //Attach each joint servo
-	// //and write each init position
+  //Attach each joint servo
+	//and write each init position
   body.attach(servo_pins[0]);
   body.writeMicroseconds(pos_init[0]);
   

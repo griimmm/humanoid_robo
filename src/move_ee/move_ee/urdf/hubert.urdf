@@ -78,7 +78,7 @@
 
   <joint name="base_joint" type="revolute">
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-1.57" upper="1.57" velocity="0.5"/>
+    <limit effort="1000.0" lower="0" upper="3.14" velocity="0.5"/>
     <parent link="base_link"/>
     <child link="robot_body"/>
     <origin xyz="0 0 0.055"/>
@@ -92,7 +92,7 @@
 
   <joint name="shoulder_joint" type="revolute">
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-0.785" upper="0.785" velocity="0.5"/>
+    <limit effort="1000.0" lower="0" upper="3.14" velocity="0.5"/>
     <parent link="robot_shoulder"/>
     <child link="robot_arm"/>
     <origin rpy=" 1.57075 0 0" xyz="0.034 -0.108 0"/>
@@ -100,7 +100,7 @@
   
   <joint name="elbow_joint" type="revolute">
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-0.785" upper="0.785" velocity="0.5"/>
+    <limit effort="1000.0" lower="-0" upper="1.57075" velocity="0.5"/>
     <parent link="robot_arm"/>
     <child link="robot_elbow"/>
     <origin rpy=" 0 0 0" xyz="0.015 -0.088 -0.005"/>
