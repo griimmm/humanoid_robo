@@ -5,18 +5,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-include_directories(/opt/ros/humble/include)
-include_directories(/opt/ros/humble/include/urdf)
-include_directories(/opt/ros/humble/include/moveit_msgs)
-include_directories(/opt/ros/humble/include/rosidl_runtime_cpp)
-include_directories(/opt/ros/humble/include/rosidl_runtime_c)
-include_directories(/usr/include/eigen3)
-include_directories(/opt/ros/humble/include/rclcpp)
-include_directories(/opt/ros/humble/include/rcl)
-include_directories(/opt/ros/humble/include/rcutils)
-include_directories(/opt/ros/humble/include/geometry_msgs)
 include_directories(/opt/ros/humble/include/graph_msgs)
-include_directories(/opt/ros/humble/include/rmw)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 # uncomment the following section in order to fill in
@@ -37,9 +27,10 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-find_package(
-  control_msgs)
+find_package(control_msgs)
 find_package(Eigen3)
+find_package(geometric_shapes)
+find_package(graph_msgs REQUIRED)
 find_package(interactive_markers)
 find_package(moveit_core)
 find_package(moveit)
@@ -55,25 +46,31 @@ find_package(rclcpp)
 find_package(rclcpp_action)
 find_package(rviz_visual_tools)
 find_package(tf2_geometry_msgs)
-find_package(tf2_geometry_msgs)
 find_package(tf2_ros)
 
 set(THIS_PACKAGE_INCLUDE_DEPENDS
+  ament_cmake
   pluginlib
   moveit_core
   moveit_ros_planning
   Boost
+  rclcpp
+  rclcpp_action
+  moveit_msgs
+  moveit_core
+  moveit_visual_tools
+  moveit_ros_planning_interface
 )
   
 
-add_executable(try_moveit
+add_executable(move_trial
     src/moveit_trial.cpp)
-target_include_directories(try_moveit
+target_include_directories(move_trial
   PUBLIC include)
-ament_target_dependencies(try_moveit
+ament_target_dependencies(move_trial
   ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost)
 
-install(TARGETS try_moveit
+install(TARGETS move_trial
   DESTINATION lib/${PROJECT_NAME}
 )
 
