@@ -68,10 +68,19 @@ add_executable(move_trial
 target_include_directories(move_trial
   PUBLIC include)
 ament_target_dependencies(move_trial
-  ${THIS_PACKAGE_INCLUDE_DEPENDS} Boost)
+  ${THIS_PACKAGE_INCLUDE_DEPENDS})
 
 install(TARGETS move_trial
   DESTINATION lib/${PROJECT_NAME}
 )
+add_executable(hello_moveit
+src/tutorial.cpp)
+target_include_directories(hello_moveit
+PUBLIC include)
+install(TARGETS hello_moveit
+  DESTINATION lib/${PROJECT_NAME}
+)
+ament_target_dependencies(hello_moveit
+  ${THIS_PACKAGE_INCLUDE_DEPENDS})
 
 ament_package()
