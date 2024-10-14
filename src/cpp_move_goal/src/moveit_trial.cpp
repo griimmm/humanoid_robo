@@ -59,12 +59,12 @@ int main(int argc, char** argv)
   // Note that we are using the ROS pluginlib library here.
   std::unique_ptr<pluginlib::ClassLoader<planning_interface::PlannerManager>> planner_plugin_loader;
   planning_interface::PlannerManagerPtr planner_instance;
-  std::string planner_plugin_name;
+  std::string planner_plugin_name="ompl_interface/OMPLPlanner";
 
   // We will get the name of planning plugin we want to load
   // from the ROS parameter server, and then load the planner
   // making sure to catch all exceptions.
-  if (!moveit_trial_node->get_parameter("ompl.planning_plugin", planner_plugin_name))
+  if (!moveit_trial_node->get_parameter("planning_plugin", planner_plugin_name))
     RCLCPP_FATAL(LOGGER, "Could not find planner plugin names");
   try
   {
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
   visual_tools.trigger();
 
   /* We can also use visual_tools to wait for user input */
-  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
+  // visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
 
   // Pose Goal
   // ^^^^^^^^^
@@ -190,7 +190,7 @@ int main(int argc, char** argv)
 
   // END_TUTORIAL
   /* Wait for user input */
-  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to exit the demo");
+  // visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to exit the demo");
   planner_instance.reset();
 
   rclcpp::shutdown();
