@@ -1,50 +1,15 @@
-/*********************************************************************
- * Software License Agreement (BSD License)
- *
- *  Copyright (c) 2012, Willow Garage, Inc.
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of Willow Garage nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *********************************************************************/
 
-/* Author: Sachin Chitta, Michael Lautman */
-
-// #include <pluginlib/class_loader.hpp>
+#include <pluginlib/class_loader.hpp>
 
 // MoveIt
-#include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/robot_model_loader/robot_model_loader.h>
 #include <moveit/planning_interface/planning_interface.h>
 #include <moveit/planning_scene/planning_scene.h>
 #include <moveit/kinematic_constraints/utils.h>
 #include <moveit_msgs/msg/display_trajectory.hpp>
 #include <moveit_msgs/msg/planning_scene.h>
-// #include <moveit_visual_tools/moveit_visual_tools.h>
+#include <moveit_visual_tools/moveit_visual_tools.h>
+#include <moveit/move_group_interface/move_group_interface.h>
 
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("move_trial");
 
@@ -94,12 +59,12 @@ int main(int argc, char** argv)
   // Note that we are using the ROS pluginlib library here.
   std::unique_ptr<pluginlib::ClassLoader<planning_interface::PlannerManager>> planner_plugin_loader;
   planning_interface::PlannerManagerPtr planner_instance;
-  std::vector<std::string> planner_plugin_names;
+  std::string planner_plugin_name;
 
   // We will get the name of planning plugin we want to load
   // from the ROS parameter server, and then load the planner
   // making sure to catch all exceptions.
-  if (!moveit_trial_node->get_parameter("ompl.planning_plugins", planner_plugin_names))
+  if (!moveit_trial_node->get_parameter("ompl.planning_plugin", planner_plugin_name))
     RCLCPP_FATAL(LOGGER, "Could not find planner plugin names");
   try
   {
@@ -110,18 +75,9 @@ int main(int argc, char** argv)
   {
     RCLCPP_FATAL(LOGGER, "Exception while creating planning plugin loader %s", ex.what());
   }
-
-  if (planner_plugin_names.empty())
-  {
-    RCLCPP_ERROR(LOGGER,
-                 "No planner plugins defined. Please make sure that the planning_plugins parameter is not empty.");
-    return -1;
-  }
-
-  const auto& planner_name = planner_plugin_names.at(0);
   try
   {
-    planner_instance.reset(planner_plugin_loader->createUnmanagedInstance(planner_name));
+    planner_instance.reset(planner_plugin_loader->createUnmanagedInstance(planner_plugin_name));
     if (!planner_instance->initialize(robot_model, moveit_trial_node,
                                       moveit_trial_node->get_namespace()))
       RCLCPP_FATAL(LOGGER, "Could not initialize planner instance");
@@ -133,7 +89,7 @@ int main(int argc, char** argv)
     std::stringstream ss;
     for (const auto& cls : classes)
       ss << cls << " ";
-    RCLCPP_ERROR(LOGGER, "Exception while loading planner '%s': %s\nAvailable plugins: %s", planner_name.c_str(),
+    RCLCPP_ERROR(LOGGER, "Exception while loading planner '%s': %s\nAvailable plugins: %s", planner_plugin_name.c_str(),
                  ex.what(), ss.str().c_str());
   }
 
@@ -144,7 +100,7 @@ int main(int argc, char** argv)
   // The package MoveItVisualTools provides many capabilities for visualizing objects, robots,
   // and trajectories in RViz as well as debugging tools such as step-by-step introspection of a script.
   namespace rvt = rviz_visual_tools;
-  moveit_visual_tools::MoveItVisualTools visual_tools(moveit_trial_node, "panda_link0",
+  moveit_visual_tools::MoveItVisualTools visual_tools(moveit_trial_node, "base_link",
                                                       "move_group_tutorial", move_group.getRobotModel());
   visual_tools.enableBatchPublishing();
   visual_tools.deleteAllMarkers();  // clear all old markers
@@ -154,7 +110,11 @@ int main(int argc, char** argv)
      via buttons and keyboard shortcuts in RViz */
   visual_tools.loadRemoteControl();
 
-  
+  /* RViz provides many types of markers, in this demo we will use text, cylinders, and spheres*/
+  Eigen::Isometry3d text_pose = Eigen::Isometry3d::Identity();
+  text_pose.translation().z() = 1.75;
+  visual_tools.publishText(text_pose, "Motion Planning API Demo", rvt::WHITE, rvt::XLARGE);
+
   /* Batch publishing is used to reduce the number of messages being sent to RViz for large visualizations */
   visual_tools.trigger();
 
@@ -169,7 +129,7 @@ int main(int argc, char** argv)
   planning_interface::MotionPlanRequest req;
   planning_interface::MotionPlanResponse res;
   geometry_msgs::msg::PoseStamped pose;
-  pose.header.frame_id = "panda_link0";
+  pose.header.frame_id = "base_link";
   pose.pose.position.x = 0.3;
   pose.pose.position.y = 0.4;
   pose.pose.position.z = 0.75;
@@ -185,33 +145,21 @@ int main(int argc, char** argv)
   // :moveit_codedir:`kinematic_constraints<moveit_core/kinematic_constraints/include/moveit/kinematic_constraints/kinematic_constraint.h>`
   // package.
   moveit_msgs::msg::Constraints pose_goal =
-      kinematic_constraints::constructGoalConstraints("panda_link8", pose, tolerance_pose, tolerance_angle);
+      kinematic_constraints::constructGoalConstraints("robot_elbow", pose, tolerance_pose, tolerance_angle);
 
   req.group_name = PLANNING_GROUP;
   req.goal_constraints.push_back(pose_goal);
-
-  // Define workspace bounds
-  req.workspace_parameters.min_corner.x = req.workspace_parameters.min_corner.y =
-      req.workspace_parameters.min_corner.z = -5.0;
-  req.workspace_parameters.max_corner.x = req.workspace_parameters.max_corner.y =
-      req.workspace_parameters.max_corner.z = 5.0;
 
   // We now construct a planning context that encapsulate the scene,
   // the request and the response. We call the planner using this
   // planning context
   planning_interface::PlanningContextPtr context =
-      planner_instance->getPlanningContext(planning_scene, req, res.error_code);
-
-  if (!context)
-  {
-    RCLCPP_ERROR(LOGGER, "Failed to create planning context");
-    return -1;
-  }
+      planner_instance->getPlanningContext(planning_scene, req, res.error_code_);
   context->solve(res);
-  if (res.error_code.val != res.error_code.SUCCESS)
+  if (res.error_code_.val != res.error_code_.SUCCESS)
   {
     RCLCPP_ERROR(LOGGER, "Could not compute plan successfully");
-    return -1;
+    return 0;
   }
 
   // Visualize the result
@@ -240,9 +188,9 @@ int main(int argc, char** argv)
   visual_tools.publishText(text_pose, "Pose Goal (1)", rvt::WHITE, rvt::XLARGE);
   visual_tools.trigger();
 
-  // Display the goal state
-  visual_tools.trigger();
-  
+  // END_TUTORIAL
+  /* Wait for user input */
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to exit the demo");
   planner_instance.reset();
 
   rclcpp::shutdown();
