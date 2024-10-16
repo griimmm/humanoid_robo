@@ -67,6 +67,8 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
                 
                 # cv2.polylines(frame_with_polygon, [np.array(points)], False, (0, 0, 255 ), 2)
 
+                # degmos
+
             return points
 
                 
