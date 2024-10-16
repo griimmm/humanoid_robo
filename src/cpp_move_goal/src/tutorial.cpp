@@ -23,14 +23,17 @@ int main(int argc, char * argv[])
     // Set a target Pose
     auto const target_pose = []{
     geometry_msgs::msg::Pose msg;
-    msg.orientation.w = 1.0;
-    msg.position.x = 0.05;
-    msg.position.y = 0.0;
-    msg.position.z = 0.0;
+    msg.orientation.w = 1.000000;
+    msg.position.x = 0.2;
+    msg.position.y = -0.2;
+    msg.position.z =  0.5;
     return msg;
     }();
     move_group_interface.setPoseTarget(target_pose);
-
+    move_group_interface.setPlanningTime(20);
+    move_group_interface.getCurrentPose();
+    move_group_interface.setPlannerId("RRTstarkConfigDefault");
+    move_group_interface.setNumPlanningAttempts(20);
     // Create a plan to that target pose
     auto const [success, plan] = [&move_group_interface]{
     moveit::planning_interface::MoveGroupInterface::Plan msg;

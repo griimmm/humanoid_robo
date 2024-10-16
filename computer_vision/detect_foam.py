@@ -71,6 +71,10 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
 
             points_to_cut = points_list
 
+                # degmos
+
+            return points
+
                 
         elif shape == "circle": #contours of a circle to the foam
             M = cv2.moments(c) # calculates moments
@@ -79,7 +83,7 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
                 cy = int(M['m01'] / M['m00']) # '' y
             
             fixed_distance = 20 # distance from top 
-            fixed_radius = 100 #circle radius
+            fixed_radius = 80#100 #circle radius
 
             while True:
                 # Get the topmost point of the circle 
