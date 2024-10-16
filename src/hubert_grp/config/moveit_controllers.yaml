@@ -14,5 +14,6 @@ moveit_simple_controller_manager:
       - base_joint
       - shoulder_joint
       - elbow_joint
+      - end_effector_joint
     action_ns: follow_joint_trajectory
     default: true

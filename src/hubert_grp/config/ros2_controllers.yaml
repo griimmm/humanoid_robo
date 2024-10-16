@@ -16,6 +16,7 @@ hubert_grp_controller:
       - base_joint
       - shoulder_joint
       - elbow_joint
+      - end_effector_joint
     command_interfaces:
       - position
     state_interfaces:

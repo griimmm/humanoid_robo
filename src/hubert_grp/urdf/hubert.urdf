@@ -76,6 +76,21 @@
     </collision>
   </link>
 
+  <link name="end_effector">
+    <visual>
+      <geometry>
+        <box size="0.204 0.02 0.02"/>
+      </geometry>
+      <origin rpy=" 0 0 1.57075" xyz="0 -.102 0"/>
+    </visual>
+    <collision>
+    <geometry>
+        <box size="0.15 0.02 0.02"/>
+      </geometry>
+      <origin rpy=" 0 0 1.57075" xyz="0 -.075 0"/>
+    </collision>
+  </link>
+
   <joint name="base_joint" type="revolute">
     <axis xyz="0 0 1"/>
     <limit effort="1000.0" lower="0" upper="3.14" velocity="0.5"/>
@@ -105,5 +120,11 @@
     <child link="robot_elbow"/>
     <origin rpy=" 0 0 0" xyz="0.015 -0.088 -0.005"/>
   </joint>
-  
+
+  <joint name="end_effector_joint" type="fixed">
+    <axis xyz="0 0 1"/>
+    <parent link="robot_elbow"/>
+    <child link="end_effector"/>
+    <origin rpy=" 0 0 0" xyz="0.015 -0.15 -0.005"/>
+  </joint>
 </robot>
