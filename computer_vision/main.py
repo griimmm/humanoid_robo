@@ -69,11 +69,13 @@ def main():
         #         world_coords.append(world_coord)
         #     send_points(world_coords)
         
-        points = find_foam(img)
+        shape = "level"
+        points = find_foam(img,shape)
         world_coords = []
         for image_coord in points:
             world_coord = transform(image_coord[0], image_coord[1])
             world_coords.append(world_coord)
+            print(world_coord)
         send_points(world_coords)
 
     cv2.destroyAllWindows()

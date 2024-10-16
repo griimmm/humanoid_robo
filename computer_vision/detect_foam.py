@@ -24,6 +24,8 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
     cnts = cv2.findContours(color_mask,cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
 
+    points_to_cut = []
+
     if cnts:
         c = max(cnts, key=cv2.contourArea)
         foam_mask = np.zeros(frame.shape[:2], dtype=np.uint8)
@@ -66,6 +68,8 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
                     font, 0.5, (0, 255, 255), 1)
                 
                 # cv2.polylines(frame_with_polygon, [np.array(points)], False, (0, 0, 255 ), 2)
+
+            points_to_cut = points_list
 
                 
         elif shape == "circle": #contours of a circle to the foam
@@ -112,6 +116,10 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
                 coord_text = f"{point_x},{point_y}"
                 cv2.putText(frame_with_polygon, coord_text, (point_x + 5, point_y - 5),font, 0.5, (0, 255, 255), 1)
 
+            points_to_cut = circle_points
+        
+            # return circle_points
+
 
         elif shape == "tree-like":
             M = cv2.moments(c)  # Calculate moments
@@ -120,7 +128,7 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
                 cy = int(M['m01'] / M['m00'])  # Centroid y
             
             fixed_distance = 20  # Distance from top 
-            fixed_radius = 100   # Circle radius
+            fixed_radius = 80   # Circle radius
 
             cx1 = cx
             cy1 = cy
@@ -212,7 +220,10 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
             # cv2.line(frame_with_polygon, new_left_point, leftmost_point, (0, 255, 0), 1)
             # cv2.line(frame_with_polygon, new_right_point, rightmost_point, (0, 255, 0), 1)
 
-
+            cut_points = [leftmost_point,left_end] + upper_points + [right_end,rightmost_point]
+            # print(cut_points)
+            # return cut_points
+            points_to_cut = cut_points
                     
         cv2.imshow('frame', frame)
         cv2.imshow('largest white contour', foam_mask)
@@ -220,11 +231,12 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
         cv2.imshow('polygon', frame_with_polygon)
 
         
+        cv2.waitKey(0) & 0xFF 
     else:
         print("No foam")
         return
 
-    return cv2.waitKey(0) & 0xFF
+    return points_to_cut
 
 def main():
     images = []
