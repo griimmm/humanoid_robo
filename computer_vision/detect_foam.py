@@ -67,6 +67,8 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
                 
                 # cv2.polylines(frame_with_polygon, [np.array(points)], False, (0, 0, 255 ), 2)
 
+            return points
+
                 
         elif shape == "circle": #contours of a circle to the foam
             M = cv2.moments(c) # calculates moments
@@ -75,7 +77,7 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
                 cy = int(M['m01'] / M['m00']) # '' y
             
             fixed_distance = 20 # distance from top 
-            fixed_radius = 100 #circle radius
+            fixed_radius = 80#100 #circle radius
 
             while True:
                 # Get the topmost point of the circle 
@@ -112,6 +114,8 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
                 coord_text = f"{point_x},{point_y}"
                 cv2.putText(frame_with_polygon, coord_text, (point_x + 5, point_y - 5),font, 0.5, (0, 255, 255), 1)
 
+            return circle_points
+
 
         elif shape == "tree-like":
             M = cv2.moments(c)  # Calculate moments
@@ -120,7 +124,7 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
                 cy = int(M['m01'] / M['m00'])  # Centroid y
             
             fixed_distance = 20  # Distance from top 
-            fixed_radius = 100   # Circle radius
+            fixed_radius = 80 #100   # Circle radius
 
             cx1 = cx
             cy1 = cy
@@ -211,6 +215,12 @@ def find_foam(frame,shape): #shape is the shape of contour to cut
             # # Connect the new lower points to the edge points
             # cv2.line(frame_with_polygon, new_left_point, leftmost_point, (0, 255, 0), 1)
             # cv2.line(frame_with_polygon, new_right_point, rightmost_point, (0, 255, 0), 1)
+
+            cut_points = [leftmost_point, left_end] + upper_points + [right_end, rightmost_point]
+
+            return cut_points
+
+
 
 
                     

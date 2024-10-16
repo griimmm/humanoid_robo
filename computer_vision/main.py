@@ -29,13 +29,14 @@ class CoordinateSaver:
             self.image_coords.append((x,y))
 
 def send_points(world_coords: list):
+    # TODO: how to pass points
     pass
 
 def main():
     cv2.namedWindow("Image")
 
     transform = None
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW) # 0 or 1 usually
     while True:
         success, img = cap.read()
         img = get_undistorted_image(img, camera_matrix, distortion_coefficients)
@@ -49,7 +50,7 @@ def main():
             break
     
     if transform:
-        coord_saver = CoordinateSaver()
+        # coord_saver = CoordinateSaver()
 
         # TEST:
         # cv2.setMouseCallback("Image", coord_saver.select_point)
@@ -69,10 +70,11 @@ def main():
         #         world_coords.append(world_coord)
         #     send_points(world_coords)
         
-        points = find_foam(img)
+        points = find_foam(img, "tree-like")
         world_coords = []
         for image_coord in points:
             world_coord = transform(image_coord[0], image_coord[1])
+            print(f"Coord is {world_coord}")
             world_coords.append(world_coord)
         send_points(world_coords)
 
