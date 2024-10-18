@@ -34,8 +34,6 @@
         <joint name="elbow_joint" value="0.1996"/>
         <joint name="shoulder_joint" value="0.4424"/>
     </group_state>
-    <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="dummy_ee" parent_link="robot_elbow" group="hubert_grp"/>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="base_link" link2="end_effector" reason="Never"/>
     <disable_collisions link1="base_link" link2="robot_arm" reason="Never"/>

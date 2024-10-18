@@ -24,16 +24,19 @@ int main(int argc, char * argv[])
     auto const target_pose = []{
     geometry_msgs::msg::Pose msg;
     msg.orientation.w = 1.000000;
-    msg.position.x = 0.2;
-    msg.position.y = -0.2;
-    msg.position.z =  0.5;
+    msg.position.x = 1e-6;
+    msg.position.y = -0.442426;
+    msg.position.z = 0.1996769;
+
     return msg;
     }();
-    move_group_interface.setPoseTarget(target_pose);
-    move_group_interface.setPlanningTime(20);
+    move_group_interface.setGoalPositionTolerance(0.5);
+    move_group_interface.setGoalOrientationTolerance(0.5);
+    move_group_interface.setPoseTarget(target_pose, "end_effector");
+    move_group_interface.setPlanningTime(30);
     move_group_interface.getCurrentPose();
-    move_group_interface.setPlannerId("RRTstarkConfigDefault");
-    move_group_interface.setNumPlanningAttempts(20);
+    move_group_interface.setPlannerId("PRMstarkConfigDefault");
+    move_group_interface.setNumPlanningAttempts(50);
     // Create a plan to that target pose
     auto const [success, plan] = [&move_group_interface]{
     moveit::planning_interface::MoveGroupInterface::Plan msg;
