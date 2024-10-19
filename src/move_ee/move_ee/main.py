@@ -39,22 +39,22 @@ class MinimalSubscriber(Node):
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
     def get_undistorted_image(self, img, cam_matrix, dist_coeff):
-        h,w = img.shape[:2]
+        h, w = img.shape[:2]
         new_cam_matrix, _ = cv2.getOptimalNewCameraMatrix(cam_matrix, dist_coeff, (w,h), 1, (w,h))
         undist_image = cv2.undistort(img, cam_matrix, dist_coeff, None, new_cam_matrix)
         return undist_image
     
     def cv_stuff(self):
-        cv2.namedWindow("Image")
+        # cv2.namedWindow("Image")
 
         transform = None
-        cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) # 0 or 1 usually
+        cap = cv2.VideoCapture(0) # 0 or 1 usually removed cv2.CAP_DSHOW
         
         while True:
             _, img = cap.read()
             img = self.get_undistorted_image(img, self.camera_matrix, self.distortion_coefficients)
             
-            cv2.imshow("Image", img)
+            # cv2.imshow("Image", img)
             # key = cv2.waitKey(1)
             # if key == ord('q'):
             #     break
@@ -91,7 +91,7 @@ class MinimalSubscriber(Node):
                 world_coords.append(self.world_coord)
             # send_points(world_coords)
             # return self.world_coord
-            cv2.destroyAllWindows()
+            # cv2.destroyAllWindows()
     
     def timer_callback(self):
         msg = Pose()        
@@ -112,5 +112,5 @@ def main(args=None):
     rclpy.shutdown()
     
 
-if __name__=='__main__':
-    main()
+# if __name__=='__main__':
+#     main()
