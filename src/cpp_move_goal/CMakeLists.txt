@@ -33,13 +33,13 @@ find_package(geometric_shapes)
 find_package(graph_msgs REQUIRED)
 find_package(interactive_markers)
 find_package(moveit_core)
-find_package(moveit)
+# find_package(moveit)
 find_package(moveit_msgs)
 find_package(moveit_ros_planning)
 find_package(moveit_ros_planning_interface)
 find_package(moveit_ros_move_group)
 find_package(moveit_servo)
-find_package(moveit_task_constructor_core)
+# find_package(moveit_task_constructor_core)
 find_package(moveit_visual_tools)
 find_package(pluginlib)
 find_package(rclcpp)
@@ -57,9 +57,9 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp
   rclcpp_action
   moveit_msgs
-  moveit_core
   moveit_visual_tools
   moveit_ros_planning_interface
+  srdfdom
 )
   
 
@@ -69,18 +69,30 @@ target_include_directories(move_trial
   PUBLIC include)
 ament_target_dependencies(move_trial
   ${THIS_PACKAGE_INCLUDE_DEPENDS})
-
 install(TARGETS move_trial
   DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install launch files.
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
 )
 add_executable(hello_moveit
 src/tutorial.cpp)
 target_include_directories(hello_moveit
 PUBLIC include)
 install(TARGETS hello_moveit
-  DESTINATION lib/${PROJECT_NAME}
-)
+  DESTINATION lib/${PROJECT_NAME})
 ament_target_dependencies(hello_moveit
   ${THIS_PACKAGE_INCLUDE_DEPENDS})
 
+add_executable(robo_kine
+src/robot_kine.cpp)
+target_include_directories(robo_kine
+PUBLIC include)
+install(TARGETS robo_kine
+  DESTINATION lib/${PROJECT_NAME})
+ament_target_dependencies(robo_kine
+  ${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()
