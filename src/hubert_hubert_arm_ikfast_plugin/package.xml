@@ -5,18 +5,18 @@
   <description>IKFast plugin for hubert</description>
   <license>BSD</license>
   <maintainer email="damodar@todo.todo">damodar</maintainer>
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roscpp</build_depend>
+  <build_depend>rclcpp</build_depend>
   <build_depend>tf2_eigen</build_depend>
   <build_depend>tf2_kdl</build_depend>
   <build_depend>moveit_core</build_depend>
   <build_depend>pluginlib</build_depend>
   <build_depend>liblapack-dev</build_depend>
   <exec_depend>moveit_core</exec_depend>
-  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rclcpp</exec_depend>
   <exec_depend>pluginlib</exec_depend>
   <exec_depend>liblapack-dev</exec_depend>
   <export>
+    <build_type>ament_cmake</build_type>
     <moveit_core plugin="${prefix}/hubert_hubert_arm_moveit_ikfast_plugin_description.xml"/>
   </export>
 </package>

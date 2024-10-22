@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 project(pls_work)
 
 find_package(ament_cmake REQUIRED)
-find_package(hubert_hubert_arm_ikfast_plugin REQUIRED)
+# find_package(hubert_hubert_arm_ikfast_plugin REQUIRED)
 
 ament_package()
 

@@ -139,17 +139,17 @@ int main(int argc, char** argv)
   //    end_effector_state that we computed in the step above.
   //  * The timeout: 0.1 s
   double timeout = 5;
-  // auto const target_pose = [] {
-  //   geometry_msgs::msg::Pose msg;
-  //   msg.orientation.x = 0.59816; //0.65952;//relative robot_elbow 0.0;//-0.659801;   //0.0;//0.660831;
-  //   msg.orientation.y = -0.37708;//-0.25498;//relative robot_elbow0.0;//-0.255526;   //0.0;//-0.257464;
-  //   msg.orientation.z = 0.5337;//0.25503;//relative robot_elbow0.13689;//0.255057;   //0.0;//0.255172;
-  //   msg.orientation.w = -0.46388;//0.65953;//relative robot_elbow 0.99059;//0.659024;   //1.0;//0.657191;
-  //   msg.position.x = 0.081335;//0.086748;//relative robot_elbow 0.015; //0.0882441;  //-0.093624;
-  //   msg.position.y = 0.11549;//-0.103;//relative robot_elbow -0.088;//-0.101586;  //0.096507;
-  //   msg.position.z = 0.59834;//0.29798;//relative robot_elbow -0.005;//0.300683;  //0.310392;
-  //   return msg;
-  // }();
+  auto const target_pose = [] {
+    geometry_msgs::msg::Pose msg;
+    // msg.orientation.x = 0.59816; //0.65952;//relative robot_elbow 0.0;//-0.659801;   //0.0;//0.660831;
+    // msg.orientation.y = -0.37708;//-0.25498;//relative robot_elbow0.0;//-0.255526;   //0.0;//-0.257464;
+    // msg.orientation.z = 0.5337;//0.25503;//relative robot_elbow 0.13689;//0.255057;   //0.0;//0.255172;
+    msg.orientation.w = 1.0;//0.65953;//relative robot_elbow 0.99059;//0.659024;   //1.0;//0.657191;
+    msg.position.x = 0.081335;//0.086748;//relative robot_elbow 0.015; //0.0882441;  //-0.093624;
+    msg.position.y = 0.11549;//-0.103;//relative robot_elbow -0.088;//-0.101586;  //0.096507;
+    msg.position.z = 0.59834;//0.29798;//relative robot_elbow -0.005;//0.300683;  //0.310392;
+    return msg;
+  }();
   // const Eigen::Translation3d translation(0.0, 0.0, 0.0);
 
   // Define the quaternion
@@ -157,10 +157,10 @@ int main(int argc, char** argv)
   // Eigen::Matrix3d rotation;
   // rotation = Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitZ());
   // quat.normalize();
-  const Eigen::Isometry3d& pose = Eigen::Isometry3d::Identity();
-  RCLCPP_INFO_STREAM(LOGGER, "Full: \n" << pose.matrix() << "\n");
+  // const Eigen::Isometry3d& pose = Eigen::Isometry3d::Identity();
+  // RCLCPP_INFO_STREAM(LOGGER, "Full: \n" << pose.matrix() << "\n");
  //translation * quat;
-  bool found_ik = kinematic_state->setFromIK(joint_model_group, pose, timeout);
+  bool found_ik = kinematic_state->setFromIK(joint_model_group, target_pose, timeout);
   
   // Now, we can print out the IK solution (if found):
   if (found_ik)

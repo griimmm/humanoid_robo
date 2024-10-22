@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<library path="lib/libhubert_hubert_arm_moveit_ikfast_plugin">
+<library path="hubert_hubert_arm_moveit_ikfast_plugin">
   <class name="hubert_hubert_arm/IKFastKinematicsPlugin" type="hubert_hubert_arm::IKFastKinematicsPlugin" base_class_type="kinematics::KinematicsBase">
     <description>IKFast61 plugin for closed-form kinematics of hubert hubert_arm</description>
   </class>

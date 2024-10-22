@@ -24,7 +24,7 @@ def generate_launch_description():
     controllers_yaml = load_yaml('pls_work', 'config/kinematics.yaml')
     load_controllers = Node(
         package='cpp_move_goal',
-        executable='robo_kine',
+        executable='hello_moveit',
         # output='screen',
         parameters=[controllers_yaml]  # Load parameters from the YAML file
     )
