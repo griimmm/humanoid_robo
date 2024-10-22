@@ -3,9 +3,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <moveit/move_group_interface/move_group_interface.h>
 
-auto message = geometry_msgs::msg::Pose();
-
-
 /*
 Subscribes to cv_coord topic and updates the goal positions sent to moveit_group_interface accordingly.
 */
@@ -13,49 +10,40 @@ class MinimalSubscriber : public rclcpp::Node
 {
 public:
   MinimalSubscriber()
-  : Node("minimal_subscriber")
+  : Node("move_hubert"), message_(geometry_msgs::msg::Pose())
   {
     auto topic_callback =
       [this](geometry_msgs::msg::Pose msg) -> void {
-        message = msg;
+        message_ = msg;
       };
     subscription_ =
-      this->create_subscription<geometry_msgs::msg::Pose>("topic", 10, topic_callback);
+      this->create_subscription<geometry_msgs::msg::Pose>("cv_coord", 10, topic_callback);
+      
+      timer_ = this->create_wall_timer(
+      std::chrono::seconds(5),
+      std::bind(&MinimalSubscriber::timer_callback, this));
   }
-
+  
 private:
+  geometry_msgs::msg::Pose message_; 
   rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr subscription_;
-};
+  rclcpp::TimerBase::SharedPtr timer_;  
 
-int main(int argc, char* argv[])
-{
-  // Initialize ROS and create the Node
-  rclcpp::init(argc, argv);
-  auto const node = std::make_shared<rclcpp::Node>(
-      "hello_moveit", rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true));
-
-  // Create a ROS logger
-  auto const logger = rclcpp::get_logger("hello_moveit");
+  void timer_callback()
+  {
+    auto const logger = this->get_logger();
 
   // Create the MoveIt MoveGroup Interface
   using moveit::planning_interface::MoveGroupInterface;
-  auto move_group_interface = MoveGroupInterface(node, "hubert_arm");
+  auto move_group_interface = MoveGroupInterface(shared_from_this(), "hubert_arm");
   move_group_interface.setGoalPositionTolerance(0.5);
   move_group_interface.setGoalOrientationTolerance(0.5);
   move_group_interface.setPlanningTime(30);
 
-  // Set a target Pose
-  auto const target_pose = [] {
-    geometry_msgs::msg::Pose msg;
-    msg.orientation.x = message.orientation.x;
-    msg.orientation.y = message.orientation.y;
-    msg.orientation.z = message.orientation.z;
-    msg.orientation.w = message.orientation.w;
-    msg.position.x = message.position.x; 
-    msg.position.y = message.position.y;
-    msg.position.z = message.position.z;
-    return msg;
-  }();
+  //Set a target pose
+  geometry_msgs::msg::Pose target_pose;
+  target_pose.orientation = message_.orientation;  // ros2 topic pub /cv_coord geometry_msgs/msg/Pose "{position: {x: 0.29591830149428244, y: -0.09801094170013577, z: 0.07800292822954993}, orientation: {x: 0.6205310755024788, y: -0.33899560607520735, z: 0.3390209866150409, w: 0.6205545375162478}}"
+  target_pose.position = message_.position; 
   move_group_interface.setPoseTarget(target_pose);
 
   // Create a plan to that target pose
@@ -74,7 +62,14 @@ int main(int argc, char* argv[])
   {
     RCLCPP_ERROR(logger, "Planning failed!");
   }
-  // Shutdown ROS
+
+  } 
+};
+
+int main(int argc, char* argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<MinimalSubscriber>());
   rclcpp::shutdown();
-  return 0;
+  return 0; 
 }
