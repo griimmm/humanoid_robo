@@ -1,0 +1,25 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: hubert_grp
+    relative_path: urdf/hubert.urdf
+  srdf:
+    relative_path: config/hubert.srdf
+  package_settings:
+    author_name: ddk
+    author_email: ddk@where.com
+    generated_timestamp: 1729463273
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
