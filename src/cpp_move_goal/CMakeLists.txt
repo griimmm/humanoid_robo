@@ -73,6 +73,7 @@ install(TARGETS move_trial
   DESTINATION lib/${PROJECT_NAME}
 )
 
+
 # Install launch files.
 install(DIRECTORY
   launch
@@ -94,5 +95,15 @@ PUBLIC include)
 install(TARGETS robo_kine
   DESTINATION lib/${PROJECT_NAME})
 ament_target_dependencies(robo_kine
+  ${THIS_PACKAGE_INCLUDE_DEPENDS})
+# ament_package()
+
+add_executable(move_hubert
+src/move_hubert.cpp)
+target_include_directories(move_hubert
+PUBLIC include)
+install(TARGETS move_hubert
+  DESTINATION lib/${PROJECT_NAME})
+ament_target_dependencies(move_hubert
   ${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()
