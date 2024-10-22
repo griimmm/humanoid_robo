@@ -48,19 +48,19 @@ class MinimalSubscriber(Node):
         # cv2.namedWindow("Image")
 
         transform = None
-        cap = cv2.VideoCapture(0) # 0 or 1 usually removed cv2.CAP_DSHOW
+        cap = cv2.VideoCapture(2) # 0 or 1 usually removed cv2.CAP_DSHOW
         
-        while True:
-            _, img = cap.read()
-            img = self.get_undistorted_image(img, self.camera_matrix, self.distortion_coefficients)
-            
-            # cv2.imshow("Image", img)
-            # key = cv2.waitKey(1)
-            # if key == ord('q'):
-            #     break
-            # elif key == ord('h'):
-            transform = get_transform_function_for_vertical_plane_pixel_coord_to_base_frame_coord(img)
-            break
+        # while True:
+        _, img = cap.read()
+        img = self.get_undistorted_image(img, self.camera_matrix, self.distortion_coefficients)
+        
+        # cv2.imshow("Image", img)
+        # key = cv2.waitKey(1)
+        # if key == ord('q'):
+        #     break
+        # elif key == ord('h'):
+        transform = get_transform_function_for_vertical_plane_pixel_coord_to_base_frame_coord(img)
+            # break
         
         if transform:
             # coord_saver = CoordinateSaver()
@@ -95,9 +95,9 @@ class MinimalSubscriber(Node):
     
     def timer_callback(self):
         msg = Pose()        
-        msg.position.x = self.world_coord[0]
-        msg.position.y = self.world_coord[1] 
-        msg.position.z = self.world_coord[2]
+        msg.position.x = self.world_coord[0] / 1000
+        msg.position.y = self.world_coord[1] / 1000
+        msg.position.z = self.world_coord[2] / 1000
         msg.orientation.w = 1.0
         self.publisher.publish(msg)
 
