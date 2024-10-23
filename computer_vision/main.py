@@ -36,7 +36,7 @@ def main():
     cv2.namedWindow("Image")
 
     transform = None
-    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW) # 0 or 1 usually
+    cap = cv2.VideoCapture(2) # 0 or 1 usually
     while True:
         success, img = cap.read()
         img = get_undistorted_image(img, camera_matrix, distortion_coefficients)
@@ -70,7 +70,7 @@ def main():
         #         world_coords.append(world_coord)
         #     send_points(world_coords)
         
-        points = find_foam(img, "tree-like")
+        points = find_foam(img, "level")
         world_coords = []
         for image_coord in points:
             world_coord = transform(image_coord[0], image_coord[1])

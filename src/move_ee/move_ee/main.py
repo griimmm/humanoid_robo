@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import time
 from move_ee.get_transform_function_for_vertical_plane_coord_to_base_frame_coord import get_transform_function_for_vertical_plane_pixel_coord_to_base_frame_coord
 from move_ee.detect_foam import find_foam
 import rclpy
@@ -47,7 +48,7 @@ class MinimalSubscriber(Node):
     def cv_stuff(self):
         # cv2.namedWindow("Image")
 
-        transform = None
+        transform = True #None
         cap = cv2.VideoCapture(2) # 0 or 1 usually removed cv2.CAP_DSHOW
         
         # while True:
@@ -59,7 +60,7 @@ class MinimalSubscriber(Node):
         # if key == ord('q'):
         #     break
         # elif key == ord('h'):
-        transform = get_transform_function_for_vertical_plane_pixel_coord_to_base_frame_coord(img)
+        # transform = get_transform_function_for_vertical_plane_pixel_coord_to_base_frame_coord(img)
             # break
         
         if transform:
@@ -82,24 +83,58 @@ class MinimalSubscriber(Node):
             #         world_coord = transform(image_coord[0], image_coord[1])
             #         world_coords.append(world_coord)
             #     send_points(world_coords)
+            # Coord is (np.float64(442.7178472845303), np.float64(-167.3339925776814), -7.407854627085442)
+            # Coord is (np.float64(358.38445857872296), np.float64(-14.21845920322437), 56.69584497743831)
+            # Coord is (np.float64(313.3054322431425), np.float64(67.62693165912923), 90.961423617485)
+            # Coord is (np.float64(284.8703808412699), np.float64(119.25355462237806), 112.57554373381933)
+            # Coord is (np.float64(265.5678243259605), np.float64(154.29923797138207), 127.24784972609031)
+            # Coord is (np.float64(315.5945402710604), np.float(66.67595888996229), 185.65687896248411)
+            # Coord is (np.float64(334.40552879670395), np.floa(66.94061338297345), 183.5302266063786)
+            # Coord is (np.float64(354.32271317517814), np.floa(67.22083110394591), 181.2785146866287)
+            # Coord is (np.float64(375.44662549628026), np.floa(67.51802645325635), 178.89037767582795)
+            # Coord is (np.float64(397.51113034055), np.float64(67.82845513355362), 176.3959031749584)
+
+            # self.world_coords = [[0.3155945402710604,  0.06667595888996229, 0.18565687896248411],
+            #                      [0.33440552879670395, 0.06694061338297345, 0.1835302266063786],
+            #                      [0.35432271317517814, 0.06722083110394591, 0.1812785146866287],
+            #                      [0.37544662549628026, 0.06751802645325635, 0.17889037767582795],
+            #                      [0.39751113034055,    0.06782845513355362, 0.1763959031749584]]
+            # self.world_coords = [[0.1155945402710604, 0.06667595888996229, 0.18565687896248411],
+            #                      [0.1155945402710604, 1.09667595888996229, 0.18565687896248411]]
+                                #  [0.3155945402710604, 1.03667595888996229, 0.18565687896248411],
+                                #  [0.3155945402710604, 1.06667595888996229, 0.18565687896248411],
+                                #  [0.3155945402710604, 1.09667595888996229, 0.18565687896248411]]
+            # self.world_coords = [[0.4627178472845303, -0.1673339925776814, 0.07407854627085442],
+            #                     [0.35838445857872296, -0.01421845920322437, 0.05669584497743831],
+            #                     [0.3133054322431425, -0.06762693165912923, 0.090961423617485],
+            #                     [0.2848703808412699, -0.11925355462237806, 0.11257554373381933],
+            #                     [0.2655678243259605, -0.15429923797138207, 0.12724784972609031]] tree like
+            self.world_coords = [[0.21453, -0.097988, 0.27391],
+                                #  [0.27028, 0.019982, 0.31915],
+                                 [0.1609, 0.19887, 0.30545],
+                                 [0.10545, 0.25243, 0.4138],
+                                #  [0.27028, 0.019982, 0.31915],
+                                 [0.11971, 0.246, 0.41379]]
             
-            points = find_foam(img, "tree-like")
-            world_coords = []
-            for image_coord in points:
-                self.world_coord = transform(image_coord[0], image_coord[1])
-                print(f"Coord is {self.world_coord}")
-                world_coords.append(self.world_coord)
+            # points = find_foam(img, "tree-like")
+            # world_coords = []
+            # for image_coord in points:
+            #     self.world_coord = transform(image_coord[0], image_coord[1])
+            #     print(f"Coord is {self.world_coord}")
+            #     world_coords.append(self.world_coord)
             # send_points(world_coords)
             # return self.world_coord
             # cv2.destroyAllWindows()
     
     def timer_callback(self):
         msg = Pose()        
-        msg.position.x = self.world_coord[0] / 1000
-        msg.position.y = self.world_coord[1] / 1000
-        msg.position.z = self.world_coord[2] / 1000
-        msg.orientation.w = 1.0
-        self.publisher.publish(msg)
+        for world_coord in self.world_coords:
+            msg.position.x = world_coord[0] #/ 1000
+            msg.position.y = world_coord[1] #/ 1000
+            msg.position.z = world_coord[2] #/ 1000
+            msg.orientation.w = 1.0
+            self.publisher.publish(msg)
+            time.sleep(25)
 
 
 def main(args=None):
