@@ -36,14 +36,17 @@ private:
   // Create the MoveIt MoveGroup Interface
   using moveit::planning_interface::MoveGroupInterface;
   auto move_group_interface = MoveGroupInterface(shared_from_this(), "hubert_arm");
-  move_group_interface.setGoalPositionTolerance(0.5);
-  move_group_interface.setGoalOrientationTolerance(0.5);
+  move_group_interface.setGoalPositionTolerance(0.3); //current tested tolerance 23 Oct
+  move_group_interface.setGoalOrientationTolerance(0.25); //current tested tolerance 23 Oct
   move_group_interface.setPlanningTime(30);
 
   //Set a target pose
   geometry_msgs::msg::Pose target_pose;
-  target_pose.orientation = message_.orientation;  // ros2 topic pub /cv_coord geometry_msgs/msg/Pose "{position: {x: 0.29591830149428244, y: -0.09801094170013577, z: 0.07800292822954993}, orientation: {x: 0.6205310755024788, y: -0.33899560607520735, z: 0.3390209866150409, w: 0.6205545375162478}}"
-  target_pose.position = message_.position; 
+  target_pose.orientation.x = 0.6205310755024788;  // ros2 topic pub /cv_coord geometry_msgs/msg/Pose "{position: {x: 0.29591830149428244, y: -0.09801094170013577, z: 0.07800292822954993}, orientation: {x: 0.6205310755024788, y: -0.33899560607520735, z: 0.3390209866150409, w: 0.6205545375162478}}"
+  target_pose.orientation.y = -0.33899560607520735; //working quaternion values
+  target_pose.orientation.z = 0.3390209866150409;
+  target_pose.orientation.w = 0.6205545375162478;
+  target_pose.position = message_.position;
   move_group_interface.setPoseTarget(target_pose);
 
   // Create a plan to that target pose
