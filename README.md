@@ -21,5 +21,9 @@ To run the moveit from program
 ```
 ros2 launch move_ee try.launch.py
 ```
+To run the CV coord publisher
 
+```
+ros2 run move_ee coord_publisher
+```
 4 publishers, 6 subscribers allowed on the arduino after rebuilding the core library
