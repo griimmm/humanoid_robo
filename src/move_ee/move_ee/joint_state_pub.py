@@ -17,7 +17,7 @@ class MinimalSubscriber(Node):
             'joint_states',
             self.listener_callback,
             10)
-        self.prev_1 = 1440
+        self.prev_1 = 1440 #1840 tested oct 23 and seemed to work
         self.prev_2 = 2200
         self.prev_3 = 1650
         self.publisher_1 = self.create_publisher(UInt16, 'servo_body', 10)
@@ -37,15 +37,15 @@ class MinimalSubscriber(Node):
         msg3 = UInt16()
         
         try:
-            self.prev_1 = self.range - int((self.some_var[0]/np.pi)*self.range)+self.start
-            self.prev_2 = self.range - int((self.some_var[1]/np.pi)*self.range)+self.start
-            self.prev_3 = int(((np.pi/2 +self.some_var[2])/np.pi)*self.range)+self.start
-            msg1.data = self.range - int((self.some_var[0]/np.pi)*self.range)+self.start #radians to PCM values, angle range (0,pi) 
-            msg2.data = self.range - int((self.some_var[1]/np.pi)*self.range)+self.start #radians to PCM values, angle range (0,pi) 
-            msg3.data = int(( (np.pi/2 +self.some_var[2])/np.pi)*self.range)+self.start #radians to PCM values, angle range (0,pi/2) 
-        except:
-            print("self", self.prev_1)
+            self.prev_1 = int(int(self.range/2) + int((self.some_var[0]/np.pi)*self.range/2) + self.start) # changed to account 1440 to 2300
+            self.prev_2 = int(int(self.range/2) + int((self.some_var[1]/np.pi)*self.range/2) + self.start) #changed to account 1440 to 2300
+            self.prev_3 = int(((np.pi/2 +self.some_var[2])/np.pi)*self.range + self.start)
             msg1.data = self.prev_1 #radians to PCM values, angle range (0,pi) 
+            msg2.data = self.prev_2 #radians to PCM values, angle range (0,pi) 
+            msg3.data = self.prev_3 #radians to PCM values, angle range (0,pi/2) 
+        except:
+            # print("self", self.prev_1)
+            msg1.data = self.prev_1  #radians to PCM values, angle range (0,pi) 
             msg2.data = self.prev_2 #radians to PCM values, angle range (0,pi) 
             msg3.data = self.prev_3 #radians to PCM values, angle range (0,pi/2) 
         self.publisher_1.publish(msg1)
