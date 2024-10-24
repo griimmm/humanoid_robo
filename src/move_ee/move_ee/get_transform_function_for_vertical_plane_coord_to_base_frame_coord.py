@@ -48,7 +48,7 @@ def get_transform_function_for_vertical_plane_pixel_coord_to_base_frame_coord(im
 
     copy_img = np.copy(img)
     cv2.rectangle(copy_img, (0,0), (int(w/2),h), (0,0,0), -1)
-    corners_xy_coords_in_horizontal_plane = np.array([(328,0), (328,-28), (300, 0), (300,-28)]) #np.array([(468,0), (468,-28), (440, 0), (440,-28)])#np.array([(412-40+46,-40-109+42),(412-40+46,-40-109+15),(412-40+46-28,-40-109+42),(412-40+46-28,-40-109+15)]) # height diff. +230mm rel. to table
+    corners_xy_coords_in_horizontal_plane = np.array([(263, 50-54), (263, 22-54), (235, 50-54), (235, 22-54)]) #np.array([(468,0), (468,-28), (440, 0), (440,-28)])#np.array([(412-40+46,-40-109+42),(412-40+46,-40-109+15),(412-40+46-28,-40-109+42),(412-40+46-28,-40-109+15)]) # height diff. +230mm rel. to table
     horizontal_plane_homography_matrix = get_homography_matrix(copy_img, corners_xy_coords_in_horizontal_plane)
 
     other_copy_img = np.copy(img)

@@ -15,13 +15,12 @@ def load_yaml(package_name, file_path):
         return yaml.safe_load(file)
     
 def generate_launch_description():
-    package_share_directory = get_package_share_directory('pls_work')
     declare_use_sim_time = DeclareLaunchArgument(
         'use_sim_time',
         default_value='false',
         description='Use simulation (Gazebo) clock if true'
     )
-    controllers_yaml = load_yaml('pls_work', 'config/kinematics.yaml')
+    controllers_yaml = load_yaml('hubert_group_moveit', 'config/kinematics.yaml')
     load_controllers = Node(
         package='cpp_move_goal',
         executable='move_hubert',

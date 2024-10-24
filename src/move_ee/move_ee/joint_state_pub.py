@@ -5,11 +5,11 @@ import numpy as np
 from sensor_msgs.msg import JointState
 from std_msgs.msg import UInt16
 
-class MinimalSubscriber(Node):
+class JointValuePublisher(Node):
 
     def __init__(self):
-        super().__init__('minimal_subscriber')
-        self.some_var = []
+        super().__init__('joint_publisher')
+        self.position_var = []
         self.start = 550 #Ideal 500
         self.range = 1750 #Ideal 1800
         self.subscription = self.create_subscription(
@@ -29,7 +29,7 @@ class MinimalSubscriber(Node):
 
     def listener_callback(self, msg):
        # self.get_logger().info('I heard: "%s"' % msg)
-        self.some_var = msg.position
+        self.position_var = msg.position
 
     def timer_callback(self):
         msg1 = UInt16()
@@ -37,9 +37,9 @@ class MinimalSubscriber(Node):
         msg3 = UInt16()
         
         try:
-            self.prev_1 = int(int(self.range/2) + int((self.some_var[0]/np.pi)*self.range/2) + self.start) # changed to account 1440 to 2300
-            self.prev_2 = int(int(self.range/2) + int((self.some_var[1]/np.pi)*self.range/2) + self.start) #changed to account 1440 to 2300
-            self.prev_3 = int(((np.pi/2 +self.some_var[2])/np.pi)*self.range + self.start)
+            self.prev_1 = int(int(self.range/2) - int((self.position_var[0]/np.pi)*self.range/2)*2 + self.start) # changed to account 1440 to 2300
+            self.prev_2 = int(int(self.range) - int((self.position_var[1]/np.pi)*self.range/2) + self.start) #changed to account 1440 to 2300
+            self.prev_3 = int(((np.pi/2 +self.position_var[2])/np.pi)*self.range + self.start)
             msg1.data = self.prev_1 #radians to PCM values, angle range (0,pi) 
             msg2.data = self.prev_2 #radians to PCM values, angle range (0,pi) 
             msg3.data = self.prev_3 #radians to PCM values, angle range (0,pi/2) 
@@ -53,16 +53,14 @@ class MinimalSubscriber(Node):
         self.publisher_3.publish(msg3)
 
         # self.get_logger().info('Publishing: "%s"' % msg.data)
-        
-
 
 def main(args=None):
     rclpy.init(args=args)
 
-    minimal_subscriber = MinimalSubscriber()
-    rclpy.spin(minimal_subscriber)
+    joint_val_pub = JointValuePublisher()
+    rclpy.spin(joint_val_pub)
 
-    minimal_subscriber.destroy_node()
+    joint_val_pub.destroy_node()
     rclpy.shutdown()
 
 

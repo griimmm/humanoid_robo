@@ -1,12 +1,11 @@
 from setuptools import setup
 
 package_name = 'move_ee'
-submodules_1 = 'move_ee/urdf/'
 
 setup(
     name=package_name,
     version='0.0.0',
-    packages=[package_name, submodules_1],
+    packages=[package_name],
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
@@ -23,9 +22,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'joint_pub = move_ee.joint_state_pub:main',
-            'move_program = move_ee.moveit_trial:main',
-            'coord_publisher = move_ee.main:main'
+            'joint_publisher = move_ee.joint_state_pub:main',
+            'coord_publisher = move_ee.cv_coord_publisher:main'
         ],
     },
 )
