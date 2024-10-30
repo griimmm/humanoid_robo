@@ -4,7 +4,10 @@
   <name>move_ee</name>
   <version>0.0.0</version>
   <description>Package for arm motion generator</description>
-  <maintainer email="abishek.swaminathan03@gmail.com">Abishek</maintainer>
+  <maintainer email="abishek.swaminathan03@gmail.com">Abishek Swaminathan</maintainer>
+  <maintainer email="damodark@chalmers.se"> Damodar Datta</maintainer>
+  <maintainer email="augustblanc4@gmail.com">August Blanc</maintainer>
+  <maintainer email="rishi@gmail.com"> Rishikesh Vishnu</maintainer>
   <license>TODO: License declaration</license>
 
   <test_depend>ament_copyright</test_depend>

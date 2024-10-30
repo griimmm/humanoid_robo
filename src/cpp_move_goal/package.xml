@@ -4,7 +4,8 @@
   <name>cpp_move_goal</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="abishek.swaminathan03@gmail.com">grimm</maintainer>
+  <maintainer email="abishek.swaminathan03@gmail.com">Abishek Swaminathan</maintainer>
+  <maintainer email="damodark@chalmers.se"> Damodar Datta</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
