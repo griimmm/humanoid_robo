@@ -1,27 +1,25 @@
 # humanoid_robo
 Project
+
 To start the communication with Arduino
 ```
 ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyACM0
 ```
-
 To run the moveit setup with rviz 
-
 ```
 ros2 launch hubert_group_moveit demo.launch.py
 ```
 To run the joint value publisher to arduino
 
 ```
-ros2 run move_ee joint_pub
+ros2 run move_ee joint_publisher
 ```
+To run trajectory planning and moveit communication
 
-To run the moveit from program
-
 ```
-ros2 launch move_ee try.launch.py
+ros2 launch cpp_move_goal move_hubert.launch.py
 ```
-To run the CV coord publisher
+To run the CV coordinate publisher
 
 ```
 ros2 run move_ee coord_publisher

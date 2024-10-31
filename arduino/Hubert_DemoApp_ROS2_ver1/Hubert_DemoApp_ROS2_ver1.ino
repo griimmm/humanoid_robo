@@ -6,11 +6,9 @@
   Also, it publishes the current pwm value through rosserial. 
 
   Command interface:
-  >> roscore
-  >> rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=57600
+  >> ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyACM0
   Note: correct port must be selected (ttyACM0, 1 or whatever)
-  Same baud rate as in Arduino sketch (below)
-  >> ros2 topic echo publisher
+  >> ros2 topic echo /publisher
   >> ros2 topic pub /servo_body std_msgs/UInt16 data:\ <angle>\  
   >> ros2 topic pub /servo_neck_pan std_msgs/UInt16 data:\ <angle>\
   >> ros2 topic pub /servo_neck_tilt std_msgs/UInt16 data:\ <angle>\

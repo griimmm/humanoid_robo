@@ -62,41 +62,11 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   srdfdom
 )
   
-
-add_executable(move_trial
-    src/moveit_trial.cpp)
-target_include_directories(move_trial
-  PUBLIC include)
-ament_target_dependencies(move_trial
-  ${THIS_PACKAGE_INCLUDE_DEPENDS})
-install(TARGETS move_trial
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-
 # Install launch files.
 install(DIRECTORY
   launch
   DESTINATION share/${PROJECT_NAME}/
 )
-add_executable(hello_moveit
-src/tutorial.cpp)
-target_include_directories(hello_moveit
-PUBLIC include)
-install(TARGETS hello_moveit
-  DESTINATION lib/${PROJECT_NAME})
-ament_target_dependencies(hello_moveit
-  ${THIS_PACKAGE_INCLUDE_DEPENDS})
-
-add_executable(robo_kine
-src/robot_kine.cpp)
-target_include_directories(robo_kine
-PUBLIC include)
-install(TARGETS robo_kine
-  DESTINATION lib/${PROJECT_NAME})
-ament_target_dependencies(robo_kine
-  ${THIS_PACKAGE_INCLUDE_DEPENDS})
-# ament_package()
 
 add_executable(move_hubert
 src/move_hubert.cpp)
